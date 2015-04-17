@@ -8,8 +8,8 @@ namespace SolarSimulation.Graphics
 {
 	struct Vertex
 	{
-		double x = 0.0;
-		double y = 0.0;
-		double z = 0.0;
+		public double x = 0.0;
+		public double y = 0.0;
+		public double z = 0.0;
 	}
 }

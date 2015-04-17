@@ -8,8 +8,8 @@ namespace SolarSimulation.Graphics
 {
 	struct GraphicsObject
 	{
-		List<Vertex> vertices = new List<Vertex>();
-		List<Vertex> normals = new List<Vertex>();
-		List<Triangle> triangles = new List<Triangle>();
+		public List<Vertex> vertices = new List<Vertex>();
+		public List<Vertex> normals = new List<Vertex>();
+		public List<Triangle> triangles = new List<Triangle>();
 	}
 }
