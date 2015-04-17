@@ -43,6 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphics\GraphicsController.cs" />
+    <Compile Include="Graphics\GraphicsObject.cs" />
+    <Compile Include="Graphics\IGraphicsController.cs" />
+    <Compile Include="Graphics\Triangle.cs" />
+    <Compile Include="Graphics\Vertex.cs" />
     <Compile Include="PhysicObject.cs" />
     <Compile Include="Physics.cs" />
     <Compile Include="Program.cs" />
@@ -52,9 +57,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NewFolder1\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
