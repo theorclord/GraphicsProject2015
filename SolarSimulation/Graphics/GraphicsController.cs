@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SolarSimulation.Graphics
 {
-	class GraphicsController : IGraphicsController
+	class GraphicsController
 	{
         float[] light_position = {10.0f, 40.0f, 20.0f, 1.0f};
         float[] light_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };

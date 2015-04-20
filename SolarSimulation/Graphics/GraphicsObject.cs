@@ -6,10 +6,17 @@ using System.Threading.Tasks;
 
 namespace SolarSimulation.Graphics
 {
-	struct GraphicsObject
+	public struct GraphicsObject
 	{
-		public List<Vertex> vertices = new List<Vertex>();
-		public List<Vertex> normals = new List<Vertex>();
-		public List<Triangle> triangles = new List<Triangle>();
+		public List<Vertex> vertices;
+		public List<Vertex> normals;
+		public List<Triangle> triangles;
+
+        public GraphicsObject(List<Vertex> vertices, List<Vertex> normals, List<Triangle> triangles)
+        {
+            this.vertices = vertices;
+            this.normals = normals;
+            this.triangles = triangles;
+        }
 	}
 }

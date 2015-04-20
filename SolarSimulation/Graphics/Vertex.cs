@@ -6,10 +6,17 @@ using System.Threading.Tasks;
 
 namespace SolarSimulation.Graphics
 {
-	struct Vertex
+	public struct Vertex
 	{
-		public double x = 0.0;
-		public double y = 0.0;
-		public double z = 0.0;
+		public double x;
+		public double y;
+		public double z;
+
+        public Vertex(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
 	}
 }
