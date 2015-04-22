@@ -17,6 +17,16 @@ namespace SolarSimulation
             double seconds = stopwatch.ElapsedMilliseconds / 1000.0;
             Physics physics = new Physics();
             physics.Update(new List<SimObject>(), seconds);
+
+            /* Setup SimObjList & GraphicsController */
+            Graphics.GraphicsController graphCon = new Graphics.GraphicsController();
+            SimObject newSim = new SimObject();
+            newSim.GraphicsObj = graphCon.ReadObjFile("sphere.obj");
+            
+            RenderWindow renderWindow = new RenderWindow(400, 400, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
+            renderWindow.AddDrawObj(newSim);
+            renderWindow.InitScene();
+            renderWindow.Run();
         }
     }
 }
