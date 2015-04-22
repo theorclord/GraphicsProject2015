@@ -22,6 +22,10 @@ namespace SolarSimulation
             List<Matrix4> transList = new List<Matrix4>();
             SimObject newSim = new SimObject();
             newSim.GraphicsObj = graphCon.ReadObjFile("sphere.obj");
+            newSim.PhysicObj = new PhysicObject();
+            newSim.Position = new double[] { 0.0, 0.0, 0.0 };
+            newSim.PhysicObj.Velocity = new double[] { 0.1, 0.0, 0.0 };
+            newSim.PhysicObj.Acceleration = new double[] { 0.0, 0.0, 0.0 };
             
             transList = physics.Update(new List<SimObject>(), seconds);
 

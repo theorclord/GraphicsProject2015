@@ -9,7 +9,7 @@ namespace SolarSimulation.Graphics
 {
 	class GraphicsController
 	{
-        List<Matrix4> transMatrices = new List<Matrix4>();
+        List<GraphicsObject> gfxObjs = new List<GraphicsObject>();
 
         public GraphicsObject ReadObjFile(String fileName)
         {
