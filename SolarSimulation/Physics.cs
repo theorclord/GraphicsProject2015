@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK;
 
 namespace SolarSimulation
 {
     class Physics
     {
 
-
-        public void Update(List<SimObject> objects, double timeSinceLastFrame)
+        /// <summary>
+        /// Updates the physic objects and returns the related translation matrices
+        /// </summary>
+        /// <param name="objects"></param>
+        /// <param name="timeSinceLastFrame"></param>
+        /// <returns>Opentk Matrix4 used for translation</returns>
+        public List<Matrix4> Update(List<SimObject> objects, double timeSinceLastFrame)
         {
             //Calculates the forces on each of the objects and updates the acceleration.
             calcForces(objects);
@@ -19,19 +25,25 @@ namespace SolarSimulation
             calcVelocity(objects, timeSinceLastFrame);
 
             //Moves the objects to their new position.
-            updatePosition(objects, timeSinceLastFrame);
+            return updatePosition(objects, timeSinceLastFrame);
 
         }
 
-        private void updatePosition(List<SimObject> objects, double timeSinceLastFrame)
+        private List<Matrix4> updatePosition(List<SimObject> objects, double timeSinceLastFrame)
         {
+            List<Matrix4> translationMatrices = new List<Matrix4>();
+            Vector3 transVector = new Vector3();
             for (int i = 0; i < objects.Count; i++)
             {
                 for (int j = 0; j < objects[i].PhysicObj.Velocity.Length; j++)
                 {
                     objects[i].Position[j] += objects[i].Position[j] + objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
+                    transVector[j] = (float)(objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame);
                 }
+                Matrix4 transMatrix = Matrix4.CreateTranslation(transVector);
+                translationMatrices.Add(transMatrix);
             }
+            return translationMatrices;
         }
 
         private void calcVelocity(List<SimObject> objects, double timeSinceLastFrame)
@@ -104,6 +116,16 @@ namespace SolarSimulation
             for (int i = 0; i < arr.Length; i++)
             {
                 arr[i] = arr[i] / length;
+            }
+            return arr;
+        }
+
+        private double[] makeIdentity()
+        {
+            double[] arr = new double[16];
+            for (int i = 0; i < 4; i++)
+            {
+                arr[i*4+i] = 1;
             }
             return arr;
         }
