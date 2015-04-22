@@ -12,17 +12,20 @@ namespace SolarSimulation
     {
         static void Main(string[] args)
         {
+            Graphics.GraphicsController graphCon = new Graphics.GraphicsController();
+            Physics physics = new Physics();
+
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             double seconds = stopwatch.ElapsedMilliseconds / 1000.0;
-            Physics physics = new Physics();
-            physics.Update(new List<SimObject>(), seconds);
 
-            /* Setup SimObjList & GraphicsController */
-            Graphics.GraphicsController graphCon = new Graphics.GraphicsController();
+            List<Matrix4> transList = new List<Matrix4>();
             SimObject newSim = new SimObject();
             newSim.GraphicsObj = graphCon.ReadObjFile("sphere.obj");
             
+            transList = physics.Update(new List<SimObject>(), seconds);
+
+            /* Setup SimObjList & GraphicsController */
             RenderWindow renderWindow = new RenderWindow(400, 400, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
             renderWindow.AddDrawObj(newSim);
             renderWindow.InitScene();
