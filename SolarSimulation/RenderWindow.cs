@@ -11,8 +11,9 @@ namespace SolarSimulation
 {
     class RenderWindow : GameWindow
     {
-        List<Graphics.GraphicsObject> drawObjList = new List<GraphicsObject>();
-
+        List<SimObject> drawObjList = new List<SimObject>();
+        Physics physController;
+        
         float[] light_position = { 10.0f, 40.0f, 20.0f, 1.0f };
         float[] light_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -24,16 +25,39 @@ namespace SolarSimulation
         float[] eye = { 0.0f, 0.0f, 5.0f };
 
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
-        { }
+        {
+            physController = new Physics();
+        }
 
         public void AddDrawObj(SimObject sObj)
-        { drawObjList.Add(sObj.GraphicsObj); }
+        { drawObjList.Add(sObj); }
 
         public void AddDrawObj(List<SimObject> sObjList)
         {
             foreach (var item in sObjList)
             { AddDrawObj(item); }
         }
+
+        private void TransformObjs(List<Matrix4> transMatrix)
+        {
+            for (int simIndex = 0; simIndex < drawObjList.Count; simIndex++)
+            {
+                Graphics.GraphicsObject gObj = drawObjList[simIndex].GraphicsObj;
+                Matrix4 curTransMat = transMatrix[simIndex];
+                for (int i = 0; i < gObj.vertices.Count; i++ )
+                { gObj.vertices[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.vertices[i]), curTransMat)); }
+
+                for (int i = 0; i < gObj.normals.Count; i++)
+                { gObj.normals[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.normals[i]), curTransMat)); }
+            }
+        }
+
+        public Vector4 Homogenize(Vertex v)
+        { return new Vector4((float)v.x, (float)v.y, (float)v.z, 1.0f); }
+
+        public Vertex Dehomogenize(Vector4 v)
+        { return new Vertex(v.X, v.Y, v.Z); }
+
 
         /* 
          * Most code inspired by code found on
@@ -43,6 +67,7 @@ namespace SolarSimulation
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            TransformObjs(physController.Update(drawObjList, e.Time));
             DrawObjs();
             SwapBuffers();
         }
@@ -55,7 +80,7 @@ namespace SolarSimulation
             GL.Light(LightName.Light0, LightParameter.Specular, light_specular);
             GL.Enable(EnableCap.Light0);
             GL.Enable(EnableCap.Lighting);
-
+            
             GL.Material(MaterialFace.Front, MaterialParameter.Ambient, material_ambient);
             GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
             GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
@@ -87,8 +112,9 @@ namespace SolarSimulation
         {
             Vertex v1, v2, v3;
             Vertex n1, n2, n3;
-            foreach (GraphicsObject curGraphObj in drawObjList)
+            foreach (SimObject curSimObj in drawObjList)
             {
+                Graphics.GraphicsObject curGraphObj = curSimObj.GraphicsObj;
                 for (int i = 0; i < curGraphObj.triangles.Count; i++)
                 {
                     v1 = curGraphObj.vertices[curGraphObj.triangles[i].vi1];

@@ -52,7 +52,7 @@ namespace SolarSimulation
             {
                 for (int j = 0; j < objects[i].PhysicObj.Velocity.Length; j++)
                 {
-                    objects[i].PhysicObj.Velocity[j] += objects[i].PhysicObj.Velocity[j] + objects[i].PhysicObj.Acceleration[j]*timeSinceLastFrame;
+                    objects[i].PhysicObj.Velocity[j] += objects[i].PhysicObj.Acceleration[j]*timeSinceLastFrame;
                 }
             }
         }

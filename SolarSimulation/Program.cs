@@ -22,6 +22,10 @@ namespace SolarSimulation
             Graphics.GraphicsController graphCon = new Graphics.GraphicsController();
             SimObject newSim = new SimObject();
             newSim.GraphicsObj = graphCon.ReadObjFile("sphere.obj");
+            newSim.PhysicObj = new PhysicObject();
+            newSim.Position = new double[] { 0.0, 0.0, 0.0 };
+            newSim.PhysicObj.Velocity = new double[] { 0.1, 0.0, 0.0 };
+            newSim.PhysicObj.Acceleration = new double[] { 0.0, 0.0, 0.0 };
             
             RenderWindow renderWindow = new RenderWindow(400, 400, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
             renderWindow.AddDrawObj(newSim);

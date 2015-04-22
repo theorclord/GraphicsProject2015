@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK;
 
 namespace SolarSimulation.Graphics
 {
 	class GraphicsController
 	{
+        List<GraphicsObject> gfxObjs = new List<GraphicsObject>();
+
         public GraphicsObject ReadObjFile(String fileName)
         {
-            GraphicsObject newGraphicsObj = new GraphicsObject();
             List<Vertex> newVertices = new List<Vertex>();
             List<Vertex> newNormals = new List<Vertex>();
             List<Triangle> newTriangles = new List<Triangle>();
