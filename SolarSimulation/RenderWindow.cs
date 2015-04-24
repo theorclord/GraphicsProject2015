@@ -72,6 +72,16 @@ namespace SolarSimulation
             SwapBuffers();
         }
 
+        /*
+        protected override void OnResize(EventArgs e)
+        {
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.Ortho(this.ClientRectangle.Left, this.ClientRectangle.Right,
+                    this.ClientRectangle.Bottom, this.ClientRectangle.Top, 1.0, 10.0);
+            GL.Viewport(this.ClientRectangle.Size);
+        }
+        */
+
         public void InitScene()
         {
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
