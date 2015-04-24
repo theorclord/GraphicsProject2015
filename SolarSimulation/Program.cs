@@ -26,12 +26,20 @@ namespace SolarSimulation
             newSim.Position = new double[] { 0.0, 0.0, 0.0 };
             newSim.PhysicObj.Velocity = new double[] { 0.1, 0.0, 0.0 };
             newSim.PhysicObj.Acceleration = new double[] { 0.0, 0.0, 0.0 };
+            SimObject newSim2 = new SimObject();
+            newSim2.GraphicsObj = graphCon.ReadObjFile("sphere.obj");
+            newSim2.PhysicObj = new PhysicObject();
+            newSim2.Position = new double[] { 0.0, 0.0, 0.0 };
+            newSim2.PhysicObj.Velocity = new double[] { -0.1, 0.05, 0.05 };
+            newSim2.PhysicObj.Acceleration = new double[] { 0.0, 0.0, 0.0 };
 
             transList = physics.Update(new List<SimObject>(), seconds);
 
             /* Setup SimObjList & GraphicsController */
-            RenderWindow renderWindow = new RenderWindow(400, 400, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
+            RenderWindow renderWindow = new RenderWindow(800, 600, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
             renderWindow.AddDrawObj(newSim);
+            //for some reason, this breaks the code.
+            //renderWindow.AddDrawObj(newSim2);
             renderWindow.InitScene();
             renderWindow.Run();
         }

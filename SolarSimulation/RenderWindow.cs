@@ -99,15 +99,20 @@ namespace SolarSimulation
             GL.Enable(EnableCap.DepthTest);
 
             // Setup viewport and perspective.
+            Matrix4 persMat, eyeMat, transMat;
+
             GL.MatrixMode(MatrixMode.Projection);
-            OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), 1.0f, 1.0f, 10.0f);
+            float persAspect = (float)ClientRectangle.Width/(float)ClientRectangle.Height;
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), persAspect, 1.0f, 10.0f);
+            //OpenTK.Matrix4.Transpose(ref persMat, out transMat);
+            //GL.MultMatrix(ref transMat);
             GL.MatrixMode(MatrixMode.Modelview);
-            OpenTK.Matrix4.LookAt(
+            eyeMat = OpenTK.Matrix4.LookAt(
                 eye[0], eye[1], eye[2],
                 0.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f
                 );
-
+            //GL.Translate(new Vector3(0.0f, 0.0f, -5.0f));
         }
 
         private float degs2rads(float degrees)
