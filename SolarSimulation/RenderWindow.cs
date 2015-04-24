@@ -63,6 +63,8 @@ namespace SolarSimulation
          * Most code inspired by code found on
          * OpenTK documentation:
          * www.opentk.com/node/3181
+         * 
+         * And on learnit, specifically Topic4
          */
         protected override void OnRenderFrame(FrameEventArgs e)
         {
@@ -72,15 +74,10 @@ namespace SolarSimulation
             SwapBuffers();
         }
 
-        /*
         protected override void OnResize(EventArgs e)
         {
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.Ortho(this.ClientRectangle.Left, this.ClientRectangle.Right,
-                    this.ClientRectangle.Bottom, this.ClientRectangle.Top, 1.0, 10.0);
-            GL.Viewport(this.ClientRectangle.Size);
+            base.OnResize(e);
         }
-        */
 
         public void InitScene()
         {
@@ -99,7 +96,7 @@ namespace SolarSimulation
             GL.Enable(EnableCap.DepthTest);
 
             GL.MatrixMode(MatrixMode.Projection);
-            OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), 1.0f, 1.0f, 10.0f);
+            OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), 0.5f, 1.0f, 10.0f);
             GL.MatrixMode(MatrixMode.Modelview);
             OpenTK.Matrix4.LookAt(
                 eye[0], eye[1], eye[2],

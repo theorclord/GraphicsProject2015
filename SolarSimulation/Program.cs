@@ -27,7 +27,7 @@ namespace SolarSimulation
             newSim.PhysicObj.Velocity = new double[] { 0.1, 0.0, 0.0 };
             newSim.PhysicObj.Acceleration = new double[] { 0.0, 0.0, 0.0 };
             
-            RenderWindow renderWindow = new RenderWindow(400, 400, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
+            RenderWindow renderWindow = new RenderWindow(800, 600, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
             renderWindow.AddDrawObj(newSim);
             renderWindow.InitScene();
             renderWindow.Run();
