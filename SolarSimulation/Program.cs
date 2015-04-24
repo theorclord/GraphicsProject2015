@@ -41,7 +41,7 @@ namespace SolarSimulation
             /* Setup SimObjList & GraphicsController */
             RenderWindow renderWindow = new RenderWindow(800, 600, OpenTK.Graphics.GraphicsMode.Default, "Solar Simulation");
             renderWindow.AddDrawObj(newSim);
-            renderWindow.AddDrawObj(newSim2);
+            //renderWindow.AddDrawObj(newSim2);
             renderWindow.InitScene();
             renderWindow.Run();
         }
