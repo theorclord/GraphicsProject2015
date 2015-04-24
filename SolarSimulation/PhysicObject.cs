@@ -11,6 +11,6 @@ namespace SolarSimulation
         public double[] Acceleration { get; set; }
         public double[] Velocity { get; set; }
         public double mass { get; set; }
-
+        public double radius { get; set; }
     }
 }
