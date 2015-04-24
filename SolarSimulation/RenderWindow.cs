@@ -81,6 +81,7 @@ namespace SolarSimulation
 
         public void InitScene()
         {
+            // Setup light strength & position.
             GL.Light(LightName.Light0, LightParameter.Position, light_position);
             GL.Light(LightName.Light0, LightParameter.Ambient, light_ambient);
             GL.Light(LightName.Light0, LightParameter.Diffuse, light_diffuse);
@@ -88,15 +89,18 @@ namespace SolarSimulation
             GL.Enable(EnableCap.Light0);
             GL.Enable(EnableCap.Lighting);
             
+            // Setup material reflection
             GL.Material(MaterialFace.Front, MaterialParameter.Ambient, material_ambient);
             GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
             GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
             GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
 
+            // Enable depthtest for backface culling(?)
             GL.Enable(EnableCap.DepthTest);
 
+            // Setup viewport and perspective.
             GL.MatrixMode(MatrixMode.Projection);
-            OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), 0.5f, 1.0f, 10.0f);
+            OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), 1.0f, 1.0f, 10.0f);
             GL.MatrixMode(MatrixMode.Modelview);
             OpenTK.Matrix4.LookAt(
                 eye[0], eye[1], eye[2],

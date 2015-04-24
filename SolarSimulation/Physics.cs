@@ -18,6 +18,8 @@ namespace SolarSimulation
         /// <returns>Opentk Matrix4 used for translation</returns>
         public List<Matrix4> Update(List<SimObject> objects, double timeSinceLastFrame)
         {
+            checkCollision(objects);
+
             //Calculates the forces on each of the objects and updates the acceleration.
             calcForces(objects);
 
@@ -27,6 +29,32 @@ namespace SolarSimulation
             //Moves the objects to their new position.
             return updatePosition(objects, timeSinceLastFrame);
 
+        }
+        private void calcImpuls(SimObject o1, SimObject o2)
+        {
+            double[] tempV1 = o1.PhysicObj.Velocity;
+            for(int i = 0; i<3;i++)
+            {
+                o1.PhysicObj.Velocity[i] = o2.PhysicObj.mass / o1.PhysicObj.mass * o2.PhysicObj.Velocity[i];
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                o2.PhysicObj.Velocity[i] = o1.PhysicObj.mass / o2.PhysicObj.mass * tempV1[i];
+            }
+        }
+
+        private void checkCollision(List<SimObject> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                for (int j = i+1; j < list.Count; j++)
+                {
+                    if (distance(list[i], list[j]) < list[i].PhysicObj.radius + list[j].PhysicObj.radius)
+                    {
+                        calcImpuls(list[i], list[j]);
+                    }
+                }
+            }
         }
 
         private List<Matrix4> updatePosition(List<SimObject> objects, double timeSinceLastFrame)
@@ -61,6 +89,7 @@ namespace SolarSimulation
         {
             for (int i = 0; i < objects.Count; i++)
             {
+                objects[i].PhysicObj.Acceleration = new double[]{0.0,0.0,0.0};
                 for (int j = 0; j < objects.Count; j++)
                 {
                     if (i == j)
@@ -81,12 +110,8 @@ namespace SolarSimulation
         {
             double gravityConst = 6.673*Math.Pow(10.0,-11.0);
             double[] force = new double[obj1.Position.Length];
-            double dist = 0.0;
-            // Calculation the distance between the objects
-            for(int i = 0; i<obj1.Position.Length; i++){
-                dist += Math.Pow((obj1.Position[i] - obj2.Position[i]), 2);
-            }
-            dist = Math.Sqrt(dist);
+            
+            double dist = distance(obj1, obj2);
 
             double forceValue = gravityConst * (obj1.PhysicObj.mass*obj2.PhysicObj.mass)/Math.Pow(dist,2.0);
 
@@ -120,14 +145,15 @@ namespace SolarSimulation
             return arr;
         }
 
-        private double[] makeIdentity()
+        private double distance(SimObject obj1, SimObject obj2)
         {
-            double[] arr = new double[16];
-            for (int i = 0; i < 4; i++)
+            double dist = 0.0;
+            // Calculation the distance between the objects
+            for (int i = 0; i < obj1.Position.Length; i++)
             {
-                arr[i*4+i] = 1;
+                dist += Math.Pow((obj1.Position[i] - obj2.Position[i]), 2);
             }
-            return arr;
+            return dist = Math.Sqrt(dist);
         }
     }
 }
