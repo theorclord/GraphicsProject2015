@@ -95,24 +95,28 @@ namespace SolarSimulation
             GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
             GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
 
-            // Enable depthtest for backface culling(?)
+            // Enable depthtest for backface culling / hidden surface elimination
             GL.Enable(EnableCap.DepthTest);
 
             // Setup viewport and perspective.
-            Matrix4 persMat, eyeMat, transMat;
+            Matrix4 persMat, eyeMat;
 
             GL.MatrixMode(MatrixMode.Projection);
             float persAspect = (float)ClientRectangle.Width/(float)ClientRectangle.Height;
             persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), persAspect, 1.0f, 10.0f);
-            //OpenTK.Matrix4.Transpose(ref persMat, out transMat);
-            //GL.MultMatrix(ref transMat);
+            OpenTK.Matrix4.Transpose(ref persMat, out persMat);
+            GL.MultMatrix(ref persMat);
+            
             GL.MatrixMode(MatrixMode.Modelview);
             eyeMat = OpenTK.Matrix4.LookAt(
                 eye[0], eye[1], eye[2],
                 0.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f
                 );
-            //GL.Translate(new Vector3(0.0f, 0.0f, -5.0f));
+            Matrix4.Transpose(ref eyeMat, out eyeMat);
+            GL.MultMatrix(ref eyeMat);
+            
+            GL.Translate(new Vector3(0.0f, 0.0f, -0.5f));
         }
 
         private float degs2rads(float degrees)
