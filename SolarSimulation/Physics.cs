@@ -65,7 +65,7 @@ namespace SolarSimulation
             {
                 for (int j = 0; j < objects[i].PhysicObj.Velocity.Length; j++)
                 {
-                    objects[i].Position[j] += objects[i].Position[j] + objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
+                    objects[i].Position[j] = objects[i].Position[j] + objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
                     transVector[j] = (float)(objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame);
                 }
                 Matrix4 transMatrix = Matrix4.CreateTranslation(transVector);
@@ -148,11 +148,15 @@ namespace SolarSimulation
         private double distance(SimObject obj1, SimObject obj2)
         {
             double dist = 0.0;
+
+            
             // Calculation the distance between the objects
             for (int i = 0; i < obj1.Position.Length; i++)
             {
                 dist += Math.Pow((obj1.Position[i] - obj2.Position[i]), 2);
             }
+            // Used for debugging purposes.
+            if (Double.IsInfinity(Math.Sqrt(dist))) { throw new ArgumentException("Distance is infinite"); }
             return dist = Math.Sqrt(dist);
         }
     }

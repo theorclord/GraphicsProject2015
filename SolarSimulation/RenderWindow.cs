@@ -22,7 +22,7 @@ namespace SolarSimulation
         float[] material_diffuse = { 1.0f, 0.0f, 0.0f, 1.0f };
         float[] material_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] material_shininess = { 50.0f };
-        float[] eye = { 0.0f, 0.0f, 5.0f };
+        float[] eye = { 0.0f, 4.0f, 30.0f };
 
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
@@ -30,12 +30,36 @@ namespace SolarSimulation
         }
 
         public void AddDrawObj(SimObject sObj)
-        { drawObjList.Add(sObj); }
+        {
+
+            Matrix4 transMat = new Matrix4(1.0f, 0.0f, 0.0f, (float)sObj.Position[0],
+                                           0.0f, 1.0f, 0.0f, (float)sObj.Position[1],
+                                           0.0f, 0.0f, 1.0f, (float)sObj.Position[2],
+                                           0.0f, 0.0f, 0.0f, 1.0f);
+            Matrix4 scaleMat = new Matrix4((float)sObj.Scale[0], 0.0f, 0.0f, 0.0f,
+                                           0.0f, (float)sObj.Scale[1], 0.0f, 0.0f,
+                                           0.0f, 0.0f, (float)sObj.Scale[2], 0.0f,
+                                           0.0f, 0.0f, 0.0f, 1.0f);
+            scaleMat.Transpose();
+            transMat = Matrix4.Mult(transMat, scaleMat);
+            transMat.Transpose();
+            TransformObj(sObj.GraphicsObj, transMat);
+            drawObjList.Add(sObj); 
+        }
 
         public void AddDrawObj(List<SimObject> sObjList)
         {
             foreach (var item in sObjList)
             { AddDrawObj(item); }
+        }
+
+        private void TransformObj(GraphicsObject gObj, Matrix4 transMatrix)
+        {
+            for (int i = 0; i < gObj.vertices.Count; i++)
+            { gObj.vertices[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.vertices[i]), transMatrix)); }
+
+            for (int i = 0; i < gObj.normals.Count; i++)
+            { gObj.normals[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.normals[i]), transMatrix)); }
         }
 
         private void TransformObjs(List<Matrix4> transMatrix)
@@ -44,11 +68,7 @@ namespace SolarSimulation
             {
                 Graphics.GraphicsObject gObj = drawObjList[simIndex].GraphicsObj;
                 Matrix4 curTransMat = transMatrix[simIndex];
-                for (int i = 0; i < gObj.vertices.Count; i++ )
-                { gObj.vertices[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.vertices[i]), curTransMat)); }
-
-                for (int i = 0; i < gObj.normals.Count; i++)
-                { gObj.normals[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.normals[i]), curTransMat)); }
+                TransformObj(gObj, curTransMat);
             }
         }
 
@@ -98,25 +118,30 @@ namespace SolarSimulation
             // Enable depthtest for backface culling / hidden surface elimination
             GL.Enable(EnableCap.DepthTest);
 
+
             // Setup viewport and perspective.
             Matrix4 persMat, eyeMat;
 
             GL.MatrixMode(MatrixMode.Projection);
-            float persAspect = (float)ClientRectangle.Width/(float)ClientRectangle.Height;
-            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), persAspect, 1.0f, 10.0f);
-            OpenTK.Matrix4.Transpose(ref persMat, out persMat);
-            GL.MultMatrix(ref persMat);
-            
+            float persAspect = (float)ClientRectangle.Width / (float)ClientRectangle.Height;
+            //persMat = OpenTK.Matrix4.CreatePerspectiveOffCenter(-2f, 2f, -2f, 2f, 1, 1000);
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 1.0f, 1000.0f);
+            //persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), persAspect, 1.0f, distanceToEarth + earthRad + 100);
+            //OpenTK.Matrix4.Transpose(ref persMat, out persMat);
+            GL.LoadMatrix(ref persMat);
+
             GL.MatrixMode(MatrixMode.Modelview);
+            // Eye, Target, Up-direction
             eyeMat = OpenTK.Matrix4.LookAt(
                 eye[0], eye[1], eye[2],
-                0.0f, 0.0f, 0.0f,
+                0.0f, 10.0f, 8.0f,
                 0.0f, 1.0f, 0.0f
                 );
-            Matrix4.Transpose(ref eyeMat, out eyeMat);
+            OpenTK.Matrix4.Transpose(ref eyeMat, out eyeMat);
+            //eyeMat.Transpose();
             GL.MultMatrix(ref eyeMat);
-            
-            GL.Translate(new Vector3(0.0f, 0.0f, -0.5f));
+
+            GL.Translate(new Vector3(0.0f, 0.0f, -7.0f));
         }
 
         private float degs2rads(float degrees)
@@ -202,9 +227,9 @@ namespace SolarSimulation
             result_b += Kd_b * Nonnegative_Dot(v_to_l, n);
 
             // ADD SPECULAR COMPONENT.  (Try using nonnegative_dot() and pow().)
-            result_r += Ks_r * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
-            result_g += Ks_g * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
-            result_b += Ks_b * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
+            //result_r += Ks_r * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
+            //result_g += Ks_g * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
+            //result_b += Ks_b * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
             /**/
 
             // Apply final lighting result to vertex.
