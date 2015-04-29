@@ -80,7 +80,7 @@ namespace SolarSimulation
             {
                 for (int j = 0; j < objects[i].PhysicObj.Velocity.Length; j++)
                 {
-                    objects[i].PhysicObj.Velocity[j] += objects[i].PhysicObj.Acceleration[j]*timeSinceLastFrame;
+                    objects[i].PhysicObj.Velocity[j] -= objects[i].PhysicObj.Acceleration[j]*timeSinceLastFrame;
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace SolarSimulation
         {
             for (int i = 0; i < objects.Count; i++)
             {
-                objects[i].PhysicObj.Acceleration = new double[]{0.0,0.0,0.0};
+                objects[i].PhysicObj.Acceleration = new double[] { 0.0, 0.0, 0.0};
                 for (int j = 0; j < objects.Count; j++)
                 {
                     if (i == j)
