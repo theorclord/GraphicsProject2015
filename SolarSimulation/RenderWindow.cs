@@ -15,11 +15,11 @@ namespace SolarSimulation
         Physics physController;
         CameraController camController;
         
-        float[] light_position = { 10.0f, 40.0f, 20.0f, 1.0f };
+        float[] light_position = { 10000.0f, 10000000.0f, 2000.0f, 1.0f };
         float[] light_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-        float[] material_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
+        float[] material_ambient = { 0.0f, 1.0f, 0.0f, 1.0f };
         float[] material_diffuse = { 1.0f, 0.0f, 0.0f, 1.0f };
         float[] material_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] material_shininess = { 50.0f };
@@ -28,20 +28,19 @@ namespace SolarSimulation
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
             physController = new Physics();
-            camController = new CameraController(new double[] { -100000000.0f, 0.0f, -150000000.0f });
+            camController = new CameraController(new double[] { 5000000.0f, 0.0f, -10000000.0f });
         }
 
         public void AddDrawObj(SimObject sObj)
         {
             // Create and apply initial position and scale matrices.
-            Matrix4 transMat = new Matrix4(1.0f, 0.0f, 0.0f, (float)sObj.Position[0],
-                                           0.0f, 1.0f, 0.0f, (float)sObj.Position[1],
-                                           0.0f, 0.0f, 1.0f, (float)sObj.Position[2],
-                                           0.0f, 0.0f, 0.0f, 1.0f);
-            Matrix4 scaleMat = new Matrix4((float)sObj.Scale[0], 0.0f, 0.0f, 0.0f,
-                                           0.0f, (float)sObj.Scale[1], 0.0f, 0.0f,
-                                           0.0f, 0.0f, (float)sObj.Scale[2], 0.0f,
-                                           0.0f, 0.0f, 0.0f, 1.0f);
+            Matrix4 transMat = Matrix4.CreateTranslation(
+                new Vector3((float)sObj.Position[0], (float)sObj.Position[1], (float)sObj.Position[2])
+                );
+            Matrix4 scaleMat = Matrix4.CreateScale(
+                new Vector3((float)sObj.Scale[0], (float)sObj.Scale[1], (float)sObj.Scale[2])
+                );
+
             scaleMat.Transpose();
             transMat = Matrix4.Mult(transMat, scaleMat);
             transMat.Transpose();
@@ -91,12 +90,22 @@ namespace SolarSimulation
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            TransformObjs(physController.Update(drawObjList, e.Time));
-            double[] rotations = camController.Update(e.Time);
-            GL.Rotate((float)rotations[0], new Vector3(1.0f, 0, 0));
-            GL.Rotate((float)rotations[1], new Vector3(0, 1.0f, 0));
-            GL.Rotate((float)rotations[2], new Vector3(0, 0, 1.0f));
+
+            List<Matrix4> transMats = physController.Update(drawObjList, e.Time);
+            TransformObjs(transMats);
+
+            //TransformObjs(physController.Update(drawObjList, e.Time));
+            Matrix4 transMat = camController.Update(e.Time);
+            //transMat = Matrix4.Mult(transMat, transMats[4]);
+            Matrix4 camMat = transMat;
+            GL.MultMatrix(ref camMat);
+            //GL.MultMatrix(ref transMat);
+            //double[] rotations = camController.Update(e.Time);
+            //GL.Rotate((float)rotations[0], new Vector3(1.0f, 0, 0));
+            //GL.Rotate((float)rotations[1], new Vector3(0, 1.0f, 0));
+            //GL.Rotate((float)rotations[2], new Vector3(0, 0, 1.0f));
             DrawObjs();
+            camController.Position = new double[] { drawObjList[1].Position[0], drawObjList[1].Position[1], drawObjList[1].Position[2] - 100000 };
             SwapBuffers();
         }
 
@@ -130,7 +139,7 @@ namespace SolarSimulation
             // Create and apply projection matrix.
             GL.MatrixMode(MatrixMode.Projection);
             float persAspect = (float)ClientRectangle.Width / (float)ClientRectangle.Height;
-            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 10000000.0f, 300000000.0f);
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 500000.0f, 300000000.0f);
             GL.LoadMatrix(ref persMat);
 
             // Create and apply view matrix.
@@ -173,15 +182,15 @@ namespace SolarSimulation
 
                     GL.Begin(PrimitiveType.Triangles);
 
-                    ShadeVertex(v1, n1);
+                    //ShadeVertex(v1, n1);
                     GL.Normal3(n1.x, n1.y, n1.z);
                     GL.Vertex3(v1.x, v1.y, v1.z);
 
-                    ShadeVertex(v2, n2);
+                    //ShadeVertex(v2, n2);
                     GL.Normal3(n2.x, n2.y, n2.z);
                     GL.Vertex3(v2.x, v2.y, v2.z);
 
-                    ShadeVertex(v3, n3);
+                    //ShadeVertex(v3, n3);
                     GL.Normal3(n3.x, n3.y, n3.z);
                     GL.Vertex3(v3.x, v3.y, v3.z);
 
@@ -210,6 +219,7 @@ namespace SolarSimulation
             Vertex v_to_eye = new Vertex { x = eye[0] - v.x, y = eye[1] - v.y, z = eye[2] - v.z };
             Normalize(v_to_eye);
 
+            //GL.Disable(EnableCap.Lighting);
             /**/
             // ACCUMULATE SPECULAR SHADING COLOR:
             // SET TO ZERO TO START.
