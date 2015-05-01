@@ -48,8 +48,8 @@
     <Compile Include="Graphics\IGraphicsController.cs" />
     <Compile Include="Graphics\Triangle.cs" />
     <Compile Include="Graphics\Vertex.cs" />
-    <Compile Include="PhysicObject.cs" />
-    <Compile Include="Physics.cs" />
+    <Compile Include="Physics\PhysicObject.cs" />
+    <Compile Include="Physics\Physics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderWindow.cs" />
