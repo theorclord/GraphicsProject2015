@@ -29,7 +29,7 @@ namespace SolarSimulation
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
             physController = new Physics();
-            camController = new CameraController(new double[] { 5000000.0f, 0.0f, -10000000.0f });
+            camController = new CameraController(new double[] { -10000000, 0.0f, -10000000 });//new double[] { -1000000.0f, 0.0f, -1000000.0f });
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
         }
@@ -44,9 +44,10 @@ namespace SolarSimulation
                 new Vector3((float)sObj.Scale[0], (float)sObj.Scale[1], (float)sObj.Scale[2])
                 );
 
-            scaleMat.Transpose();
-            transMat = Matrix4.Mult(transMat, scaleMat);
-            transMat.Transpose();
+
+            transMat.Row0 = scaleMat.Row0;
+            transMat.Row1 = scaleMat.Row1;
+            transMat.Row2 = scaleMat.Row2;
             TransformObj(sObj.GraphicsObj, transMat);
             drawObjList.Add(sObj); 
         }
