@@ -14,13 +14,14 @@ namespace SolarSimulation
         List<SimObject> drawObjList = new List<SimObject>();
         Physics physController;
         CameraController camController;
-        
-        float[] light_position = { 10000.0f, 10000000.0f, 2000.0f, 1.0f };
+        GraphicsController graphController;
+
+        float[] light_position = { -2, 0, 0 }; //{ 10000.0f, 10000000.0f, 2000.0f, 1.0f };
         float[] light_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-        float[] material_ambient = { 0.0f, 1.0f, 0.0f, 1.0f };
-        float[] material_diffuse = { 1.0f, 0.0f, 0.0f, 1.0f };
+        float[] material_ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
+        float[] material_diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
         float[] material_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] material_shininess = { 50.0f };
         float[] eye = { 0.0f, 4.0f, 30.0f };
@@ -29,6 +30,8 @@ namespace SolarSimulation
         {
             physController = new Physics();
             camController = new CameraController(new double[] { 5000000.0f, 0.0f, -10000000.0f });
+            graphController = new GraphicsController();
+            graphController.ReadObjFile("sphere.obj");
         }
 
         public void AddDrawObj(SimObject sObj)
@@ -62,7 +65,7 @@ namespace SolarSimulation
             for (int i = 0; i < gObj.normals.Count; i++)
             { Normalize(gObj.normals[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.normals[i]), transMatrix))); }
         }
-
+        
         private void TransformObjs(List<Matrix4> transMatrix)
         {
             for (int simIndex = 0; simIndex < drawObjList.Count; simIndex++)
@@ -129,7 +132,7 @@ namespace SolarSimulation
             GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
             GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
             GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
-
+            
             // Enable depthtest for backface culling / hidden surface elimination
             GL.Enable(EnableCap.DepthTest);
 
@@ -139,7 +142,7 @@ namespace SolarSimulation
             // Create and apply projection matrix.
             GL.MatrixMode(MatrixMode.Projection);
             float persAspect = (float)ClientRectangle.Width / (float)ClientRectangle.Height;
-            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 500000.0f, 300000000.0f);
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 5000.0f, 300000000.0f);
             GL.LoadMatrix(ref persMat);
 
             // Create and apply view matrix.
@@ -167,30 +170,52 @@ namespace SolarSimulation
         {
             Vertex v1, v2, v3;
             Vertex n1, n2, n3;
+            float[] color;
             foreach (SimObject curSimObj in drawObjList)
             {
                 Graphics.GraphicsObject curGraphObj = curSimObj.GraphicsObj;
-                for (int i = 0; i < curGraphObj.triangles.Count; i++)
-                {
-                    v1 = curGraphObj.vertices[curGraphObj.triangles[i].vi1];
-                    v2 = curGraphObj.vertices[curGraphObj.triangles[i].vi2];
-                    v3 = curGraphObj.vertices[curGraphObj.triangles[i].vi3];
+                List<Triangle> shape = graphController.GetShape(curGraphObj.ShapeIndex);
+                
+                // Setup Color:
+                color = curGraphObj.Color;
+                OpenTK.Graphics.Color4 material_ambient = new OpenTK.Graphics.Color4(color[0], color[1], color[2], 1.0f);
+                OpenTK.Graphics.Color4 material_diffuse = new OpenTK.Graphics.Color4(color[3], color[4], color[5], 1.0f);
+                OpenTK.Graphics.Color4 material_specular = new OpenTK.Graphics.Color4(color[6], color[7], color[8], 1.0f);
 
-                    n1 = curGraphObj.vertices[curGraphObj.triangles[i].ni1];
-                    n2 = curGraphObj.vertices[curGraphObj.triangles[i].ni2];
-                    n3 = curGraphObj.vertices[curGraphObj.triangles[i].ni3];
+                for (int i = 0; i < shape.Count; i++)
+                {
+                    v1 = curGraphObj.vertices[shape[i].vi1];
+                    v2 = curGraphObj.vertices[shape[i].vi2];
+                    v3 = curGraphObj.vertices[shape[i].vi3];
+
+                    n1 = curGraphObj.vertices[shape[i].ni1];
+                    n2 = curGraphObj.vertices[shape[i].ni2];
+                    n3 = curGraphObj.vertices[shape[i].ni3];
 
                     GL.Begin(PrimitiveType.Triangles);
 
-                    //ShadeVertex(v1, n1);
+                    // Setup material reflection
+                    /*
+                    GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Ambient);
+                    GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Diffuse);
+                    GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
+                    GL.Enable(EnableCap.ColorMaterial);
+                    */
+                    GL.Material(MaterialFace.Front, MaterialParameter.Ambient, material_ambient);
+                    GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
+                    GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
+                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
+
+
+                    ShadeVertex(v1, n1, color);
                     GL.Normal3(n1.x, n1.y, n1.z);
                     GL.Vertex3(v1.x, v1.y, v1.z);
 
-                    //ShadeVertex(v2, n2);
+                    ShadeVertex(v2, n2, color);
                     GL.Normal3(n2.x, n2.y, n2.z);
                     GL.Vertex3(v2.x, v2.y, v2.z);
 
-                    //ShadeVertex(v3, n3);
+                    ShadeVertex(v3, n3, color);
                     GL.Normal3(n3.x, n3.y, n3.z);
                     GL.Vertex3(v3.x, v3.y, v3.z);
 
@@ -199,25 +224,42 @@ namespace SolarSimulation
             }
         }
 
-        private void ShadeVertex(Vertex v, Vertex n)
+        private void ShadeVertex(Vertex v, Vertex n, float[] color)
         {
             double result_r, result_g, result_b;
             Vertex l = new Vertex { x = light_position[0], y = light_position[1], z = light_position[2] };
-            float Kd_r = material_diffuse[0];
-            float Kd_g = material_diffuse[1];
-            float Kd_b = material_diffuse[2];
-            float Ka_r = material_ambient[0];
-            float Ka_g = material_ambient[1];
-            float Ka_b = material_ambient[2];
+            /**/
+            float Ka_r = color[0];
+            float Ka_g = color[1];
+            float Ka_b = color[2];
+            float Kd_r = color[3];
+            float Kd_g = color[4];
+            float Kd_b = color[5];
+            float Ks_r = color[6];
+            float Ks_g = color[7];
+            float Ks_b = color[8];
+            float Kexp = color[9];
+            /**/
+            /*
+            float Kd_r = material_ambient[0];
+            float Kd_g = material_ambient[1];
+            float Kd_b = material_ambient[2];
+            float Ka_r = material_diffuse[0];
+            float Ka_g = material_diffuse[1];
+            float Ka_b = material_diffuse[2];
             float Ks_r = material_specular[0];
             float Ks_g = material_specular[1];
             float Ks_b = material_specular[2];
-            float Kexp = material_shininess[0] / 5.0f; // HACK! Not sure why, but required to approximate OpenGL results.
+            float Kexp = material_shininess[0];
+            */
             Vertex v_to_l = new Vertex { x = l.x - v.x, y = l.y - v.y, z = l.z - v.z };
             Normalize(v_to_l);
             Vertex l_reflect = Reflect(v_to_l, n);
             Vertex v_to_eye = new Vertex { x = eye[0] - v.x, y = eye[1] - v.y, z = eye[2] - v.z };
             Normalize(v_to_eye);
+
+            float l_distance = (float)Length(new Vertex(l.x - v.x, l.y - v.y, l.z - v.z));
+            float l_intensity = 700000 / l_distance;
 
             //GL.Disable(EnableCap.Lighting);
             /**/
@@ -233,14 +275,14 @@ namespace SolarSimulation
             result_b += Ka_b;
 
             // ADD DIFFUSE COMPONENT.  (Try using nonnegative_dot().)
-            result_r += Kd_r * Nonnegative_Dot(v_to_l, n);
-            result_g += Kd_g * Nonnegative_Dot(v_to_l, n);
-            result_b += Kd_b * Nonnegative_Dot(v_to_l, n);
+            result_r += Kd_r * Nonnegative_Dot(v_to_l, n) * l_intensity;
+            result_g += Kd_g * Nonnegative_Dot(v_to_l, n) * l_intensity;
+            result_b += Kd_b * Nonnegative_Dot(v_to_l, n) * l_intensity;
 
             // ADD SPECULAR COMPONENT.  (Try using nonnegative_dot() and pow().)
-            result_r += Ks_r * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
-            result_g += Ks_g * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
-            result_b += Ks_b * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp);
+            result_r += Ks_r * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp) * l_intensity;
+            result_g += Ks_g * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp) * l_intensity;
+            result_b += Ks_b * Math.Pow(Nonnegative_Dot(l_reflect, v_to_eye), Kexp) * l_intensity;
             /**/
 
             // Apply final lighting result to vertex.
@@ -249,7 +291,7 @@ namespace SolarSimulation
 
         private void Normalize(Vertex v)
         {
-            double length = Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            double length = Length(v);
             v.x /= length;
             v.y /= length;
             v.z /= length;
@@ -272,6 +314,11 @@ namespace SolarSimulation
 
             if (result < 0.0) return 0.0;
             else return result;
+        }
+        
+        double Length(Vertex v)
+        {
+            return Math.Sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
         }
     }
 }
