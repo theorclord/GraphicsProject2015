@@ -32,6 +32,9 @@ namespace SolarSimulation.Graphics
             shape, color); 
         }
 
+        public GraphicsObject CreateGraphicsObj(int shape)
+        { return CreateGraphicsObj(shape, defaultMaterial); }
+
         public void ReadObjFile(String filename)
         {
             List<Vertex> newVertices = new List<Vertex>();

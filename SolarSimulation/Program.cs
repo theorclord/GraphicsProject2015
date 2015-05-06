@@ -24,23 +24,23 @@ namespace SolarSimulation
 
             // The Sun
             curColor = new float[] {0.5f, 0.5f, 0, 1, 1, 0, 1, 1, 0, 10};
-            GraphicsObject sunGraphics = graphCon.CreateGraphicsObj(0, curColor);
+            GraphicsObject sunGraphics = graphCon.CreateGraphicsObj(0);
 
             // Earth
             curColor = new float[] {0, 0.1f, 0.2f, 0, 0, 1, 0, 0.5f, 1, 10};
-            GraphicsObject earthGraphics = graphCon.CreateGraphicsObj(0, curColor);
+            GraphicsObject earthGraphics = graphCon.CreateGraphicsObj(0);
 
             // Mercury
             curColor = new float[] { 0.2f, 0.2f, 0.2f, 0.4f, 0.4f, 0.4f, 0.8f, 0.8f, 0.8f, 10 };
-            GraphicsObject mercuryGraphics = graphCon.CreateGraphicsObj(0, curColor);
+            GraphicsObject mercuryGraphics = graphCon.CreateGraphicsObj(0);
 
             // Venus
             curColor = new float[] { 0.2f, 0.2f, 0.18f, 0.5f, 0.5f, 0.44f, 0.96f, 0.96f, 0.86f, 10 };
-            GraphicsObject venusGraphics = graphCon.CreateGraphicsObj(0, curColor);
+            GraphicsObject venusGraphics = graphCon.CreateGraphicsObj(0);
 
             // Mars
             curColor = new float[] { 0.2f, 0, 0, 0.4f, 0.1f, 0.1f, 1, 0.65f, 0.2f, 10 };
-            GraphicsObject marsGraphics = graphCon.CreateGraphicsObj(0, curColor);
+            GraphicsObject marsGraphics = graphCon.CreateGraphicsObj(0);
             
             /* GFX HANDLING DONE */
 
