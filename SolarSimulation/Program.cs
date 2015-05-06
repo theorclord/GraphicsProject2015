@@ -20,6 +20,7 @@ namespace SolarSimulation
             float[] curColor = new float[10];
 
             /* HANDLE GRAPHICS */
+            graphCon.ReadObjFile("sphere.obj");
 
             // The Sun
             curColor = new float[] {0.5f, 0.5f, 0, 1, 1, 0, 1, 1, 0, 10};
