@@ -13,29 +13,55 @@ namespace SolarSimulation
     {
         List<SimObject> drawObjList = new List<SimObject>();
         Physics physController;
+        CameraController camController;
         
         float[] light_position = { 10.0f, 40.0f, 20.0f, 1.0f };
         float[] light_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-        float[] material_ambient = { 0.0f, 0.0f, 0.2f, 1.0f };
+        float[] material_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] material_diffuse = { 1.0f, 0.0f, 0.0f, 1.0f };
         float[] material_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] material_shininess = { 50.0f };
-        float[] eye = { 0.0f, 0.0f, 5.0f };
+        float[] eye = { 0.0f, 4.0f, 30.0f };
 
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
             physController = new Physics();
+            camController = new CameraController(new double[] { -100000000.0f, 0.0f, -150000000.0f });
         }
 
         public void AddDrawObj(SimObject sObj)
-        { drawObjList.Add(sObj); }
+        {
+            // Create and apply initial position and scale matrices.
+            Matrix4 transMat = new Matrix4(1.0f, 0.0f, 0.0f, (float)sObj.Position[0],
+                                           0.0f, 1.0f, 0.0f, (float)sObj.Position[1],
+                                           0.0f, 0.0f, 1.0f, (float)sObj.Position[2],
+                                           0.0f, 0.0f, 0.0f, 1.0f);
+            Matrix4 scaleMat = new Matrix4((float)sObj.Scale[0], 0.0f, 0.0f, 0.0f,
+                                           0.0f, (float)sObj.Scale[1], 0.0f, 0.0f,
+                                           0.0f, 0.0f, (float)sObj.Scale[2], 0.0f,
+                                           0.0f, 0.0f, 0.0f, 1.0f);
+            scaleMat.Transpose();
+            transMat = Matrix4.Mult(transMat, scaleMat);
+            transMat.Transpose();
+            TransformObj(sObj.GraphicsObj, transMat);
+            drawObjList.Add(sObj); 
+        }
 
         public void AddDrawObj(List<SimObject> sObjList)
         {
             foreach (var item in sObjList)
             { AddDrawObj(item); }
+        }
+
+        private void TransformObj(GraphicsObject gObj, Matrix4 transMatrix)
+        {
+            for (int i = 0; i < gObj.vertices.Count; i++)
+            { gObj.vertices[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.vertices[i]), transMatrix)); }
+
+            for (int i = 0; i < gObj.normals.Count; i++)
+            { Normalize(gObj.normals[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.normals[i]), transMatrix))); }
         }
 
         private void TransformObjs(List<Matrix4> transMatrix)
@@ -44,11 +70,7 @@ namespace SolarSimulation
             {
                 Graphics.GraphicsObject gObj = drawObjList[simIndex].GraphicsObj;
                 Matrix4 curTransMat = transMatrix[simIndex];
-                for (int i = 0; i < gObj.vertices.Count; i++ )
-                { gObj.vertices[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.vertices[i]), curTransMat)); }
-
-                for (int i = 0; i < gObj.normals.Count; i++)
-                { gObj.normals[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.normals[i]), curTransMat)); }
+                TransformObj(gObj, curTransMat);
             }
         }
 
@@ -70,6 +92,10 @@ namespace SolarSimulation
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             TransformObjs(physController.Update(drawObjList, e.Time));
+            double[] rotations = camController.Update(e.Time);
+            GL.Rotate((float)rotations[0], new Vector3(1.0f, 0, 0));
+            GL.Rotate((float)rotations[1], new Vector3(0, 1.0f, 0));
+            GL.Rotate((float)rotations[2], new Vector3(0, 0, 1.0f));
             DrawObjs();
             SwapBuffers();
         }
@@ -98,25 +124,25 @@ namespace SolarSimulation
             // Enable depthtest for backface culling / hidden surface elimination
             GL.Enable(EnableCap.DepthTest);
 
-            // Setup viewport and perspective.
+            // Setup view and projection matrices.
             Matrix4 persMat, eyeMat;
 
+            // Create and apply projection matrix.
             GL.MatrixMode(MatrixMode.Projection);
-            float persAspect = (float)ClientRectangle.Width/(float)ClientRectangle.Height;
-            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(40.0f), persAspect, 1.0f, 10.0f);
-            OpenTK.Matrix4.Transpose(ref persMat, out persMat);
-            GL.MultMatrix(ref persMat);
-            
+            float persAspect = (float)ClientRectangle.Width / (float)ClientRectangle.Height;
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 10000000.0f, 300000000.0f);
+            GL.LoadMatrix(ref persMat);
+
+            // Create and apply view matrix.
             GL.MatrixMode(MatrixMode.Modelview);
             eyeMat = OpenTK.Matrix4.LookAt(
                 eye[0], eye[1], eye[2],
                 0.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f
                 );
-            Matrix4.Transpose(ref eyeMat, out eyeMat);
             GL.MultMatrix(ref eyeMat);
-            
-            GL.Translate(new Vector3(0.0f, 0.0f, -0.5f));
+
+            GL.Translate(new Vector3((float)camController.Position[0], (float)camController.Position[1], (float)camController.Position[2]));
         }
 
         private float degs2rads(float degrees)

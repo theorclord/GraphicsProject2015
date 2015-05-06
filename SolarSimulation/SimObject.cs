@@ -30,5 +30,12 @@ namespace SolarSimulation
 			get;
 			set;
 		}
+
+        public SimObject(double[] position, PhysicObject pObj, GraphicsObject gObj)
+        {
+            this.Position = position;
+            this.PhysicObj = pObj;
+            this.GraphicsObj = gObj;
+        }
     }
 }

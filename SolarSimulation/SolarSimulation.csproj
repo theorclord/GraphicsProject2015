@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CameraController.cs" />
     <Compile Include="Graphics\GraphicsController.cs" />
     <Compile Include="Graphics\GraphicsObject.cs" />
     <Compile Include="Graphics\IGraphicsController.cs" />
