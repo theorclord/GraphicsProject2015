@@ -10,8 +10,26 @@ namespace SolarSimulation.Graphics
 	class GraphicsController
 	{
         List<GraphicsObject> gfxObjs = new List<GraphicsObject>();
+        List<List<Triangle>> shapes = new List<List<Triangle>>();
+        float[] defaultMaterial =
+                new float[] {0.2f, 0.2f, 0.2f,
+                             0.5f, 0.5f, 0.5f,
+                             0.8f, 1.0f, 0.8f, 10};
 
-        public GraphicsObject ReadObjFile(String fileName)
+        private int shapeIndex = 0;
+
+        public List<Triangle> GetShape(int index)
+        { return shapes[index]; }
+
+        public GraphicsObject CreateGraphicsObj(int shape, float[] color)
+        { 
+            return new GraphicsObject(
+            new List<Vertex>(gfxObjs[shape].vertices), 
+            new List<Vertex>(gfxObjs[shape].normals),
+            shape, color); 
+        }
+
+        public void ReadObjFile(String fileName)
         {
             List<Vertex> newVertices = new List<Vertex>();
             List<Vertex> newNormals = new List<Vertex>();
@@ -82,7 +100,14 @@ namespace SolarSimulation.Graphics
                     }
                 }
             }
-            return new GraphicsObject(newVertices, newNormals, newTriangles);
+            
+            GraphicsObject newGraphObj = new GraphicsObject(newVertices, newNormals, shapeIndex, defaultMaterial);
+            this.gfxObjs.Add(newGraphObj);
+            this.shapes.Add(newTriangles);
+            shapeIndex++;
+            //new GraphicsObject(newVertices, newNormals, newTriangles);
         }
+
+
 	}
 }
