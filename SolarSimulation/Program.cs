@@ -20,8 +20,6 @@ namespace SolarSimulation
             float[] curColor = new float[10];
 
             /* HANDLE GRAPHICS */
-            graphCon.ReadObjFile("sphere.obj");
-            //graphCon.ReadObjFile("skybox.obj");
 
             // The Sun
             curColor = new float[] {0.5f, 0.5f, 0, 1, 1, 0, 1, 1, 0, 10};
@@ -56,25 +54,25 @@ namespace SolarSimulation
             PhysicObject earthPhys = new PhysicObject();
             earthPhys.mass = 5.97223 * Math.Pow(10, 24);
             earthPhys.radius = 637100;
-            earthPhys.Velocity = new double[] { 0, 0, -107219 / 3600 };
+            earthPhys.Velocity = new double[] { 0, 0,0};//-107219 / 3600, 0 };
             earthPhys.Acceleration = new double[3];
 
             PhysicObject mercuryPhys = new PhysicObject();
             mercuryPhys.mass = 3.3022 * Math.Pow(10, 23);
             mercuryPhys.radius = 243900.7;
-            mercuryPhys.Velocity = new double[] { 0, 0, 47362 / 3600 };
+            mercuryPhys.Velocity = new double[] { 0, 0, 0 };//47362 / 3600, 0 };
             mercuryPhys.Acceleration = new double[3];
 
             PhysicObject venusPhys = new PhysicObject();
             venusPhys.mass = 4.8676 * Math.Pow(10, 24);
             venusPhys.radius = 605100.8;
-            venusPhys.Velocity = new double[] { 0, 0, 35.02 };
+            venusPhys.Velocity = new double[] { 0, 0,0};//35.02, 0 };
             venusPhys.Acceleration = new double[3];
             
             PhysicObject marsPhys = new PhysicObject();
             marsPhys.mass = 6.4185 * Math.Pow(10, 23);
             marsPhys.radius = 338900.5;
-            marsPhys.Velocity = new double[] { 0, 0, 24.077 };
+            marsPhys.Velocity = new double[] { 0, 0, 0 };//24.077, 0 };
             marsPhys.Acceleration = new double[3];
 
             /* PHYSICS HANDLING DONE*/

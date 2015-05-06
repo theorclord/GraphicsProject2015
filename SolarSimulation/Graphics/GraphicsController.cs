@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Drawing.Imaging;
 using OpenTK;
+using OpenTK.Graphics.OpenGL;
 
 namespace SolarSimulation.Graphics
 {
@@ -29,13 +32,13 @@ namespace SolarSimulation.Graphics
             shape, color); 
         }
 
-        public void ReadObjFile(String fileName)
+        public void ReadObjFile(String filename)
         {
             List<Vertex> newVertices = new List<Vertex>();
             List<Vertex> newNormals = new List<Vertex>();
             List<Triangle> newTriangles = new List<Triangle>();
 
-            using (System.IO.StreamReader streamReader = new System.IO.StreamReader(fileName))
+            using (System.IO.StreamReader streamReader = new System.IO.StreamReader(filename))
             {
                 String curLine = "";
                 String[] curLineData;
@@ -108,6 +111,31 @@ namespace SolarSimulation.Graphics
             //new GraphicsObject(newVertices, newNormals, newTriangles);
         }
 
+        /*
+         * Found on OpenTK documentation.
+         * Link:
+         * www.opentk.com/doc/grahics/textures/loading
+         */
+        public int LoadTexture(String filename)
+        {
+            int id = OpenTK.Graphics.OpenGL.GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, id);
 
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            Bitmap bmp = new Bitmap(filename);
+            BitmapData bmp_data = bmp.LockBits(
+                new Rectangle(0, 0, bmp.Width, bmp.Height), 
+                ImageLockMode.ReadOnly, 
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb
+            );
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmp_data.Width, bmp_data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
+
+            bmp.UnlockBits(bmp_data);
+
+            return id;
+        }
 	}
 }

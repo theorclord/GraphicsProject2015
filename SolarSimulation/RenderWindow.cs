@@ -26,12 +26,19 @@ namespace SolarSimulation
         float[] material_shininess = { 50.0f };
         float[] eye = { 0.0f, 4.0f, 30.0f };
 
+        public List<int> textureIds;
+
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
             physController = new Physics();
             camController = new CameraController(new double[] { -10000000, 0.0f, -10000000 });//new double[] { -1000000.0f, 0.0f, -1000000.0f });
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
+
+            // Generate Texture IDs.
+            List<int> textureIds = new List<int>();
+            int id = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
+            textureIds.Add(id);
         }
 
         public void AddDrawObj(SimObject sObj)
@@ -133,6 +140,9 @@ namespace SolarSimulation
             GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
             GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
             GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
+
+            // Enable Texturing.
+            GL.Enable(EnableCap.Texture2D);
             
             // Enable depthtest for backface culling / hidden surface elimination
             GL.Enable(EnableCap.DepthTest);
@@ -171,17 +181,25 @@ namespace SolarSimulation
         {
             Vertex v1, v2, v3;
             Vertex n1, n2, n3;
-            float[] color;
+            //float[] color;
+            int j = 0;
+
             foreach (SimObject curSimObj in drawObjList)
             {
                 Graphics.GraphicsObject curGraphObj = curSimObj.GraphicsObj;
                 List<Triangle> shape = graphController.GetShape(curGraphObj.ShapeIndex);
+                j++;
+
+                if (j == 1)
+                { GL.BindTexture(TextureTarget.Texture2D, 123123123); }
                 
+                /*
                 // Setup Color:
                 color = curGraphObj.Color;
                 OpenTK.Graphics.Color4 material_ambient = new OpenTK.Graphics.Color4(color[0], color[1], color[2], 1.0f);
                 OpenTK.Graphics.Color4 material_diffuse = new OpenTK.Graphics.Color4(color[3], color[4], color[5], 1.0f);
                 OpenTK.Graphics.Color4 material_specular = new OpenTK.Graphics.Color4(color[6], color[7], color[8], 1.0f);
+                 */
 
                 for (int i = 0; i < shape.Count; i++)
                 {
@@ -195,28 +213,24 @@ namespace SolarSimulation
 
                     GL.Begin(PrimitiveType.Triangles);
 
-                    // Setup material reflection
                     /*
-                    GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Ambient);
-                    GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Diffuse);
-                    GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
-                    GL.Enable(EnableCap.ColorMaterial);
-                    */
+                    // Setup material reflection
                     GL.Material(MaterialFace.Front, MaterialParameter.Ambient, material_ambient);
                     GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
                     GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
+                     */
 
 
-                    ShadeVertex(v1, n1, color);
+                    //ShadeVertex(v1, n1, color);
                     GL.Normal3(n1.x, n1.y, n1.z);
                     GL.Vertex3(v1.x, v1.y, v1.z);
 
-                    ShadeVertex(v2, n2, color);
+                    //ShadeVertex(v2, n2, color);
                     GL.Normal3(n2.x, n2.y, n2.z);
                     GL.Vertex3(v2.x, v2.y, v2.z);
 
-                    ShadeVertex(v3, n3, color);
+                    //ShadeVertex(v3, n3, color);
                     GL.Normal3(n3.x, n3.y, n3.z);
                     GL.Vertex3(v3.x, v3.y, v3.z);
 
