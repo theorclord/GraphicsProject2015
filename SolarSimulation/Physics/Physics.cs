@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace SolarSimulation.Physics
+namespace SolarSimulation
 {
     class Physics
     {
@@ -65,7 +65,7 @@ namespace SolarSimulation.Physics
             {
                 for (int j = 0; j < objects[i].PhysicObj.Velocity.Length; j++)
                 {
-                    objects[i].Position[j] = objects[i].Position[j] + objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
+                    objects[i].Position[j] += objects[i].Position[j] + objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
                     transVector[j] = (float)(objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame);
                 }
                 Matrix4 transMatrix = Matrix4.CreateTranslation(transVector);
@@ -89,7 +89,7 @@ namespace SolarSimulation.Physics
         {
             for (int i = 0; i < objects.Count; i++)
             {
-                objects[i].PhysicObj.Acceleration = new double[] { 0.0, 0.0, 0.0};
+                objects[i].PhysicObj.Acceleration = new double[]{0.0,0.0,0.0};
                 for (int j = 0; j < objects.Count; j++)
                 {
                     if (i == j)
@@ -99,7 +99,7 @@ namespace SolarSimulation.Physics
                     double[] force = calcForce(objects[i], objects[j]);
                     for (int k = 0; k < objects[i].PhysicObj.Acceleration.Length; k++)
                     {
-                        objects[i].PhysicObj.Acceleration[k] += force[k] / objects[i].PhysicObj.mass;
+                        objects[i].PhysicObj.Acceleration[k] += -(force[k] / objects[i].PhysicObj.mass);
                     }
                 }
             }
@@ -148,15 +148,11 @@ namespace SolarSimulation.Physics
         private double distance(SimObject obj1, SimObject obj2)
         {
             double dist = 0.0;
-
-            
             // Calculation the distance between the objects
             for (int i = 0; i < obj1.Position.Length; i++)
             {
                 dist += Math.Pow((obj1.Position[i] - obj2.Position[i]), 2);
             }
-            // Used for debugging purposes.
-            if (Double.IsInfinity(Math.Sqrt(dist))) { throw new ArgumentException("Distance is infinite"); }
             return dist = Math.Sqrt(dist);
         }
     }
