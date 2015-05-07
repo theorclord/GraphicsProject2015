@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using System.Diagnostics;
 using SolarSimulation.Graphics;
+using SolarSimulation.Physics;
 
 namespace SolarSimulation
 {
@@ -16,7 +17,7 @@ namespace SolarSimulation
             GraphicsController graphCon = new GraphicsController();
             List<SimObject> simulatedObjects = new List<SimObject>();
             List<Matrix4> transList = new List<Matrix4>();
-            Physics physics = new Physics();
+            Physics.Physics physics = new Physics.Physics();
             float[] curColor = new float[10];
 
             /* HANDLE GRAPHICS */
