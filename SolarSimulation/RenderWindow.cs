@@ -31,7 +31,7 @@ namespace SolarSimulation
         float[] material_shininess = { 50.0f };
         float[] eye = { 0.0f, 4.0f, 30.0f };
 
-        public List<int> textureIds;
+        public int[] textureIds;
 
         /*
          * Textures found at: 
@@ -44,9 +44,10 @@ namespace SolarSimulation
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
 
-            textureIds = new List<int>();
-            int id = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
-            textureIds.Add(id);
+            GL.GenTextures(5, textureIds);
+            textureIds[0] = graphController.LoadTexture("Textures/texture_sun.jpg");
+            textureIds[1] = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
+            textureIds[2] = graphController.LoadTexture("Textures/texture_mecury.jpg");
         }
 
         public void AddDrawObj(SimObject sObj)
