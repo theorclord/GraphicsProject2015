@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CameraController.cs" />
+    <Compile Include="CometHandler.cs" />
     <Compile Include="Graphics\GraphicsController.cs" />
     <Compile Include="Graphics\GraphicsObject.cs" />
     <Compile Include="Graphics\IGraphicsController.cs" />

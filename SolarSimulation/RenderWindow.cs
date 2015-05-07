@@ -12,6 +12,10 @@ namespace SolarSimulation
     class RenderWindow : GameWindow
     {
         List<SimObject> drawObjList = new List<SimObject>();
+
+        //private int cometCount = 0;
+        //private Dictionary<int,SimObject> comets= new Dictionary<int,SimObject>();
+
         Physics physController;
         CameraController camController;
         GraphicsController graphController;
@@ -103,6 +107,20 @@ namespace SolarSimulation
          */
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            //Spawn comets
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown( OpenTK.Input.Key.Space))
+            {
+                PhysicObject physObj = new PhysicObject();
+                physObj.mass = 10000;
+                physObj.radius = 10000000;
+                physObj.Velocity = new double[] { 1.0, 1.0, 1.0 };
+                physObj.Acceleration = new double[3];
+                SimObject simObj = new SimObject(camController.Position, physObj, graphController.CreateGraphicsObj(0));
+                simObj.Scale = new double[] { physObj.radius, physObj.radius, physObj.radius };
+                //comets.Add(drawObjList.Count, simObj);
+                AddDrawObj(simObj);
+            }
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             List<Matrix4> transMats = physController.Update(drawObjList, e.Time);
