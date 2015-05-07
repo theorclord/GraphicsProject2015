@@ -44,10 +44,14 @@ namespace SolarSimulation
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
 
-            GL.GenTextures(5, textureIds);
-            textureIds[0] = graphController.LoadTexture("Textures/texture_sun.jpg");
-            textureIds[1] = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
-            textureIds[2] = graphController.LoadTexture("Textures/texture_mecury.jpg");
+            int[] newTextureIds = new int[5];
+            GL.GenTextures(5, newTextureIds);
+            newTextureIds[0] = graphController.LoadTexture("Textures/texture_sun.jpg");
+            newTextureIds[1] = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
+            newTextureIds[2] = graphController.LoadTexture("Textures/texture_mercury.jpg");
+            newTextureIds[3] = graphController.LoadTexture("Textures/texture_venus_surface.jpg");
+            newTextureIds[4] = graphController.LoadTexture("Textures/texture_mars.jpg");
+            textureIds = newTextureIds;
         }
 
         public void AddDrawObj(SimObject sObj)
@@ -207,16 +211,16 @@ namespace SolarSimulation
             Vertex v1, v2, v3;
             Vertex n1, n2, n3;
             var TexCoord = new double[2];
-            int j = 0;
 
             // Enable Texturing and setup.
             GL.Enable(EnableCap.Texture2D);
 
-            foreach (SimObject curSimObj in drawObjList)
+            for (int j = 0; j < drawObjList.Count; j++ )
             {
+                var curSimObj = drawObjList[j];
                 Graphics.GraphicsObject curGraphObj = curSimObj.GraphicsObj;
                 List<Triangle> shape = graphController.GetShape(curGraphObj.ShapeIndex);
-                
+
                 /*
                 // Setup Color:
                 color = curGraphObj.Color;
@@ -224,6 +228,8 @@ namespace SolarSimulation
                 OpenTK.Graphics.Color4 material_diffuse = new OpenTK.Graphics.Color4(color[3], color[4], color[5], 1.0f);
                 OpenTK.Graphics.Color4 material_specular = new OpenTK.Graphics.Color4(color[6], color[7], color[8], 1.0f);
                  */
+
+                GL.BindTexture(TextureTarget.Texture2D, textureIds[j]);
 
                 for (int i = 0; i < shape.Count; i++)
                 {
@@ -234,9 +240,6 @@ namespace SolarSimulation
                     n1 = curGraphObj.vertices[shape[i].ni1];
                     n2 = curGraphObj.vertices[shape[i].ni2];
                     n3 = curGraphObj.vertices[shape[i].ni3];
-
-                    if (j == 1)
-                    { GL.BindTexture(TextureTarget.Texture2D, textureIds[0]); }
 
                     GL.Begin(PrimitiveType.Triangles);
 
@@ -249,7 +252,7 @@ namespace SolarSimulation
                      */
 
                     var offset = new Vector3(
-                            (float)curSimObj.Position[0], 
+                            (float)curSimObj.Position[0],
                             (float)curSimObj.Position[1],
                             (float)curSimObj.Position[2]
                     );
