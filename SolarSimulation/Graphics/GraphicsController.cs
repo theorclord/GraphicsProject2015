@@ -126,7 +126,10 @@ namespace SolarSimulation.Graphics
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
+            /*
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.Repeat);
+            */
             Bitmap bmp = new Bitmap(filename);
             BitmapData bmp_data = bmp.LockBits(
                 new Rectangle(0, 0, bmp.Width, bmp.Height), 
@@ -134,11 +137,60 @@ namespace SolarSimulation.Graphics
                 System.Drawing.Imaging.PixelFormat.Format32bppArgb
             );
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmp_data.Width, bmp_data.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, 
+                PixelInternalFormat.Rgba, 
+                bmp_data.Width, bmp_data.Height, 0, 
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, 
+                PixelType.UnsignedByte, bmp_data.Scan0);
 
             bmp.UnlockBits(bmp_data);
 
             return id;
+        }
+
+        /*
+         * Algorithm described at:
+         * https://www.cs.unc.edu/~rademach/xroads-RT/RTarticle.html
+         */
+        public double[] GetTextureCoord(double x, double y, double z)
+        {
+            double u, v;
+            var Ve = new Vector3(1, 0, 0);
+            var Vn = new Vector3(0, 1, 0);
+
+            var Vp = new Vector3((float)x, (float)y, (float)z);
+            Vp.X = (float)(Vp.X / Length(Vp));
+            Vp.Y = (float)(Vp.Y / Length(Vp));
+            Vp.Z = (float)(Vp.Z / Length(Vp));
+
+            var phi = Math.Acos( Dot(Vn, Vp));
+
+            v = phi / Math.PI;
+
+            var theta = (Math.Acos(Dot(Vp, Ve) / Math.Sin(phi))) / (2 * Math.PI);
+
+            if (Dot(Cross(Vn, Ve), Vp) > 0)
+            { u = theta; }
+            else
+            { u = 1 - theta; }
+
+            return new double[] {u, v};
+        }
+
+        double Length(Vector3 v)
+        {
+            return Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
+        }
+        double Dot(Vector3 v, Vector3 n)
+        { return v.X * n.X + v.Y * n.Y + v.Z * n.Z; }
+
+        Vector3 Cross(Vector3 v, Vector3 n)
+        {
+            return new Vector3(
+                v.Y * n.Z - v.Z * n.Y,  // X-coord
+                v.X * n.Z - v.Z * n.X,  // Y-coord
+                v.X * n.Y - v.Y * n.X   // Z-coord
+            );
         }
 	}
 }

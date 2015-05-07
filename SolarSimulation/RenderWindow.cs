@@ -28,6 +28,10 @@ namespace SolarSimulation
 
         public List<int> textureIds;
 
+        /*
+         * Textures found at: 
+         * http://www.solarsystemscope.com/nexus/textures/planet_textures/
+         */
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
             physController = new Physics();
@@ -35,8 +39,7 @@ namespace SolarSimulation
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
 
-            // Generate Texture IDs.
-            List<int> textureIds = new List<int>();
+            textureIds = new List<int>();
             int id = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
             textureIds.Add(id);
         }
@@ -141,9 +144,6 @@ namespace SolarSimulation
             GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
             GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
 
-            // Enable Texturing.
-            GL.Enable(EnableCap.Texture2D);
-            
             // Enable depthtest for backface culling / hidden surface elimination
             GL.Enable(EnableCap.DepthTest);
 
@@ -181,17 +181,16 @@ namespace SolarSimulation
         {
             Vertex v1, v2, v3;
             Vertex n1, n2, n3;
-            //float[] color;
+            var TexCoord = new double[2];
             int j = 0;
+
+            // Enable Texturing and setup.
+            GL.Enable(EnableCap.Texture2D);
 
             foreach (SimObject curSimObj in drawObjList)
             {
                 Graphics.GraphicsObject curGraphObj = curSimObj.GraphicsObj;
                 List<Triangle> shape = graphController.GetShape(curGraphObj.ShapeIndex);
-                j++;
-
-                if (j == 1)
-                { GL.BindTexture(TextureTarget.Texture2D, 123123123); }
                 
                 /*
                 // Setup Color:
@@ -211,6 +210,9 @@ namespace SolarSimulation
                     n2 = curGraphObj.vertices[shape[i].ni2];
                     n3 = curGraphObj.vertices[shape[i].ni3];
 
+                    if (j == 1)
+                    { GL.BindTexture(TextureTarget.Texture2D, textureIds[0]); }
+
                     GL.Begin(PrimitiveType.Triangles);
 
                     /*
@@ -221,16 +223,18 @@ namespace SolarSimulation
                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
                      */
 
-
-                    //ShadeVertex(v1, n1, color);
+                    TexCoord = graphController.GetTextureCoord(n1.x, n1.y, n1.z);
+                    GL.TexCoord2(TexCoord[0], TexCoord[1]);
                     GL.Normal3(n1.x, n1.y, n1.z);
                     GL.Vertex3(v1.x, v1.y, v1.z);
 
-                    //ShadeVertex(v2, n2, color);
+                    TexCoord = graphController.GetTextureCoord(n2.x, n2.y, n2.z);
+                    GL.TexCoord2(TexCoord[0], TexCoord[1]);
                     GL.Normal3(n2.x, n2.y, n2.z);
                     GL.Vertex3(v2.x, v2.y, v2.z);
 
-                    //ShadeVertex(v3, n3, color);
+                    TexCoord = graphController.GetTextureCoord(n3.x, n3.y, n3.z);
+                    GL.TexCoord2(TexCoord[0], TexCoord[1]);
                     GL.Normal3(n3.x, n3.y, n3.z);
                     GL.Vertex3(v3.x, v3.y, v3.z);
 
