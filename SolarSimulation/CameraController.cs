@@ -100,6 +100,7 @@ namespace SolarSimulation
             {
                 refRotation[i] *= timeSinceLastFrame;
                 refTranslation[i] *= timeSinceLastFrame;
+                Position[i] += refTranslation[i];
             }
         }
 

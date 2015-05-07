@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SolarSimulation.Graphics;
+using SolarSimulation.Physics;
 
 namespace SolarSimulation
 {
@@ -16,7 +17,7 @@ namespace SolarSimulation
         //private int cometCount = 0;
         //private Dictionary<int,SimObject> comets= new Dictionary<int,SimObject>();
 
-        Physics physController;
+        PhysicsController physController;
         CameraController camController;
         GraphicsController graphController;
 
@@ -24,7 +25,7 @@ namespace SolarSimulation
         float[] light_ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] light_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-        float[] material_ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
+        float[] material_ambient = { 0.8f, 0.8f, 0.8f, 1.0f };
         float[] material_diffuse = { 0.5f, 0.5f, 0.5f, 1.0f };
         float[] material_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
         float[] material_shininess = { 50.0f };
@@ -38,8 +39,8 @@ namespace SolarSimulation
          */
         public RenderWindow(int width, int height, OpenTK.Graphics.GraphicsMode mode, string title) : base(width, height, mode, title)
         {
-            physController = new Physics();
-            camController = new CameraController(new double[] { -10000000, 0.0f, -10000000 });//new double[] { -1000000.0f, 0.0f, -1000000.0f });
+            physController = new PhysicsController();
+            camController = new CameraController(new double[] { 0, 0.0f, -10000000 });//new double[] { -1000000.0f, 0.0f, -1000000.0f });
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
 
@@ -111,11 +112,17 @@ namespace SolarSimulation
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown( OpenTK.Input.Key.Space))
             {
                 PhysicObject physObj = new PhysicObject();
-                physObj.mass = 10000;
+                physObj.mass = 10000000000000000000;
                 physObj.radius = 10000000;
                 physObj.Velocity = new double[] { 1.0, 1.0, 1.0 };
                 physObj.Acceleration = new double[3];
-                SimObject simObj = new SimObject(camController.Position, physObj, graphController.CreateGraphicsObj(0));
+
+                var spawnPos = camController.Position;
+                spawnPos[2] += 55000;
+                SimObject simObj = new SimObject(
+                    new double[]{
+                        camController.Position[0],camController.Position[1],camController.Position[2]
+                    }, physObj, graphController.CreateGraphicsObj(0));
                 simObj.Scale = new double[] { physObj.radius, physObj.radius, physObj.radius };
                 //comets.Add(drawObjList.Count, simObj);
                 AddDrawObj(simObj);
@@ -137,7 +144,6 @@ namespace SolarSimulation
             //GL.Rotate((float)rotations[1], new Vector3(0, 1.0f, 0));
             //GL.Rotate((float)rotations[2], new Vector3(0, 0, 1.0f));
             DrawObjs();
-            camController.Position = new double[] { drawObjList[1].Position[0], drawObjList[1].Position[1], drawObjList[1].Position[2] - 100000 };
             SwapBuffers();
         }
 
@@ -171,7 +177,7 @@ namespace SolarSimulation
             // Create and apply projection matrix.
             GL.MatrixMode(MatrixMode.Projection);
             float persAspect = (float)ClientRectangle.Width / (float)ClientRectangle.Height;
-            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 5000.0f, 300000000.0f);
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 5000.0f, 3000000000.0f);
             GL.LoadMatrix(ref persMat);
 
             // Create and apply view matrix.
@@ -241,17 +247,23 @@ namespace SolarSimulation
                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
                      */
 
-                    TexCoord = graphController.GetTextureCoord(n1.x, n1.y, n1.z);
+                    var offset = new Vector3(
+                            (float)curSimObj.Position[0], 
+                            (float)curSimObj.Position[1],
+                            (float)curSimObj.Position[2]
+                    );
+
+                    TexCoord = graphController.GetTextureCoord(n1.x, n1.y, n1.z, offset);
                     GL.TexCoord2(TexCoord[0], TexCoord[1]);
                     GL.Normal3(n1.x, n1.y, n1.z);
                     GL.Vertex3(v1.x, v1.y, v1.z);
 
-                    TexCoord = graphController.GetTextureCoord(n2.x, n2.y, n2.z);
+                    TexCoord = graphController.GetTextureCoord(n2.x, n2.y, n2.z, offset);
                     GL.TexCoord2(TexCoord[0], TexCoord[1]);
                     GL.Normal3(n2.x, n2.y, n2.z);
                     GL.Vertex3(v2.x, v2.y, v2.z);
 
-                    TexCoord = graphController.GetTextureCoord(n3.x, n3.y, n3.z);
+                    TexCoord = graphController.GetTextureCoord(n3.x, n3.y, n3.z, offset);
                     GL.TexCoord2(TexCoord[0], TexCoord[1]);
                     GL.Normal3(n3.x, n3.y, n3.z);
                     GL.Vertex3(v3.x, v3.y, v3.z);

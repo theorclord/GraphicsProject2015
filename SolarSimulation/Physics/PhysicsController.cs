@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace SolarSimulation
+namespace SolarSimulation.Physics
 {
-    class Physics
+    class PhysicsController
     {
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace SolarSimulation
             {
                 for (int j = 0; j < objects[i].PhysicObj.Velocity.Length; j++)
                 {
-                    objects[i].Position[j] += objects[i].Position[j] + objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
+                    objects[i].Position[j] += objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
                     transVector[j] = (float)(objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame);
                 }
                 Matrix4 transMatrix = Matrix4.CreateTranslation(transVector);
@@ -108,7 +108,7 @@ namespace SolarSimulation
 
         private double[] calcForce(SimObject obj1, SimObject obj2)
         {
-            double gravityConst = 6.673*Math.Pow(10.0,-11.0);
+            double gravityConst = 6.673 * Math.Pow(10.0,-11.0) * Math.Pow(10,-9);
             double[] force = new double[obj1.Position.Length];
             
             double dist = distance(obj1, obj2);

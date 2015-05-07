@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using System.Diagnostics;
 using SolarSimulation.Graphics;
+using SolarSimulation.Physics;
 
 namespace SolarSimulation
 {
@@ -16,7 +17,7 @@ namespace SolarSimulation
             GraphicsController graphCon = new GraphicsController();
             List<SimObject> simulatedObjects = new List<SimObject>();
             List<Matrix4> transList = new List<Matrix4>();
-            Physics physics = new Physics();
+            PhysicsController physics = new PhysicsController();
             float[] curColor = new float[10];
 
             /* HANDLE GRAPHICS */
@@ -50,25 +51,25 @@ namespace SolarSimulation
             PhysicObject earthPhys = new PhysicObject();
             earthPhys.mass = 5.97223 * Math.Pow(10, 24);
             earthPhys.radius = 637100;
-            earthPhys.Velocity = new double[] { 0, 0,0};//-107219 / 3600, 0 };
+            earthPhys.Velocity = new double[] { 0, 0, -107219 / 3.6 };
             earthPhys.Acceleration = new double[3];
 
             PhysicObject mercuryPhys = new PhysicObject();
             mercuryPhys.mass = 3.3022 * Math.Pow(10, 23);
             mercuryPhys.radius = 243900.7;
-            mercuryPhys.Velocity = new double[] { 0, 0, 0 };//47362 / 3600, 0 };
+            mercuryPhys.Velocity = new double[] { 0, 0, 47362 / 3.6};
             mercuryPhys.Acceleration = new double[3];
 
             PhysicObject venusPhys = new PhysicObject();
             venusPhys.mass = 4.8676 * Math.Pow(10, 24);
             venusPhys.radius = 605100.8;
-            venusPhys.Velocity = new double[] { 0, 0,0};//35.02, 0 };
+            venusPhys.Velocity = new double[] { 0, 0, 35.02 * 1000 };
             venusPhys.Acceleration = new double[3];
             
             PhysicObject marsPhys = new PhysicObject();
             marsPhys.mass = 6.4185 * Math.Pow(10, 23);
             marsPhys.radius = 338900.5;
-            marsPhys.Velocity = new double[] { 0, 0, 0 };//24.077, 0 };
+            marsPhys.Velocity = new double[] { 0, 0, 24.077 * 1000 };
             marsPhys.Acceleration = new double[3];
 
             /* PHYSICS HANDLING DONE*/
@@ -88,7 +89,7 @@ namespace SolarSimulation
             //SimObject mercurySim = new SimObject(new double[] { 57909050, 0, 0 }, mercuryPhys, graphCon.ReadObjFile("sphere.obj"));
             mercurySim.Scale = new double[] { mercuryPhys.radius, mercuryPhys.radius, mercuryPhys.radius };
 
-            SimObject venusSim = new SimObject(new double[] { 10820800, 0, 0 }, venusPhys, venusGraphics);
+            SimObject venusSim = new SimObject(new double[] { 108208000, 0, 0 }, venusPhys, venusGraphics);
             //SimObject venusSim = new SimObject(new double[] { 108208000, 0, 0 }, venusPhys, graphCon.ReadObjFile("sphere.obj"));
             venusSim.Scale = new double[] { venusPhys.radius, venusPhys.radius, venusPhys.radius };
 

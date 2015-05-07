@@ -152,13 +152,14 @@ namespace SolarSimulation.Graphics
          * Algorithm described at:
          * https://www.cs.unc.edu/~rademach/xroads-RT/RTarticle.html
          */
-        public double[] GetTextureCoord(double x, double y, double z)
+        public double[] GetTextureCoord(double x, double y, double z, Vector3 offset)
         {
             double u, v;
             var Ve = new Vector3(1, 0, 0);
             var Vn = new Vector3(0, 1, 0);
 
-            var Vp = new Vector3((float)x, (float)y, (float)z);
+            var Vp = new Vector3((float)(x - offset.X), (float)(y - offset.Y), (float)(z - offset.Z));
+
             Vp.X = (float)(Vp.X / Length(Vp));
             Vp.Y = (float)(Vp.Y / Length(Vp));
             Vp.Z = (float)(Vp.Z / Length(Vp));
