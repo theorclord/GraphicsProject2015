@@ -65,8 +65,9 @@ namespace SolarSimulation.Physics
             {
                 for (int j = 0; j < objects[i].PhysicObj.Velocity.Length; j++)
                 {
-                    objects[i].Position[j] += objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame;
-                    transVector[j] = (float)(objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame);
+                    var posChange = (objects[i].PhysicObj.Velocity[j] * timeSinceLastFrame) / 1000;
+                    objects[i].Position[j] += posChange;
+                    transVector[j] = (float)posChange;
                 }
                 Matrix4 transMatrix = Matrix4.CreateTranslation(transVector);
                 translationMatrices.Add(transMatrix);
@@ -108,12 +109,12 @@ namespace SolarSimulation.Physics
 
         private double[] calcForce(SimObject obj1, SimObject obj2)
         {
-            double gravityConst = 6.673 * Math.Pow(10.0,-11.0) * Math.Pow(10,-9);
+            double gravityConst = 6.673 * Math.Pow(10.0, -11.0); //* Math.Pow(10,9);
             double[] force = new double[obj1.Position.Length];
             
             double dist = distance(obj1, obj2);
 
-            double forceValue = gravityConst * (obj1.PhysicObj.mass*obj2.PhysicObj.mass)/Math.Pow(dist,2.0);
+            double forceValue = gravityConst * (obj1.PhysicObj.mass * obj2.PhysicObj.mass) / Math.Pow(dist * Math.Pow(10, 3), 2.0);
 
             for (int i = 0; i < obj1.Position.Length; i++)
             {

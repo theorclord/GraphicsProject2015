@@ -116,6 +116,7 @@ namespace SolarSimulation
          */
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            double timeSinceLastFrame = e.Time;
             //Spawn comets
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown( OpenTK.Input.Key.Space))
             {
@@ -136,9 +137,18 @@ namespace SolarSimulation
                 AddDrawObj(simObj);
             }
 
+            // Hold T to accelerate to 1 day / frame
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown( OpenTK.Input.Key.T))
+            { timeSinceLastFrame *= 86400; }
+
+            // Hold T + Y tp accelerate to 10 days / frame.
+            // Y calculates only 10 seconds on it's own.
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Y))
+            { timeSinceLastFrame *= 10; }
+            
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            List<Matrix4> transMats = physController.Update(drawObjList, e.Time);
+            List<Matrix4> transMats = physController.Update(drawObjList, timeSinceLastFrame);
             TransformObjs(transMats);
 
             //TransformObjs(physController.Update(drawObjList, e.Time));
