@@ -44,13 +44,15 @@ namespace SolarSimulation
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
 
-            int[] newTextureIds = new int[5];
-            GL.GenTextures(5, newTextureIds);
+            int[] newTextureIds = new int[7];
+            GL.GenTextures(7, newTextureIds);
             newTextureIds[0] = graphController.LoadTexture("Textures/texture_sun.jpg");
             newTextureIds[1] = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
             newTextureIds[2] = graphController.LoadTexture("Textures/texture_mercury.jpg");
             newTextureIds[3] = graphController.LoadTexture("Textures/texture_venus_surface.jpg");
             newTextureIds[4] = graphController.LoadTexture("Textures/texture_mars.jpg");
+            newTextureIds[5] = graphController.LoadTexture("Textures/texture_jupiter.jpg");
+            newTextureIds[6] = graphController.LoadTexture("Textures/texture_saturn.jpg");
             textureIds = newTextureIds;
         }
 
