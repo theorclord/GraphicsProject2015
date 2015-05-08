@@ -13,6 +13,7 @@ namespace SolarSimulation
     class RenderWindow : GameWindow
     {
         List<SimObject> drawObjList = new List<SimObject>();
+        Graphics.GraphicsObject skyBox;
 
         //private int cometCount = 0;
         //private Dictionary<int,SimObject> comets= new Dictionary<int,SimObject>();
@@ -43,15 +44,29 @@ namespace SolarSimulation
             camController = new CameraController(new double[] { 0, 0.0f, -10000000 });//new double[] { -1000000.0f, 0.0f, -1000000.0f });
             graphController = new GraphicsController();
             graphController.ReadObjFile("sphere.obj");
+            graphController.ReadSkyObjFile("skybox.obj");
 
-            int[] newTextureIds = new int[5];
-            GL.GenTextures(5, newTextureIds);
+            int[] newTextureIds = new int[7];
             newTextureIds[0] = graphController.LoadTexture("Textures/texture_sun.jpg");
             newTextureIds[1] = graphController.LoadTexture("Textures/texture_earth_clouds.jpg");
             newTextureIds[2] = graphController.LoadTexture("Textures/texture_mercury.jpg");
             newTextureIds[3] = graphController.LoadTexture("Textures/texture_venus_surface.jpg");
             newTextureIds[4] = graphController.LoadTexture("Textures/texture_mars.jpg");
+            newTextureIds[5] = graphController.LoadTexture("Textures/texture_moon.jpg");
+            newTextureIds[6] = graphController.LoadTexture("Textures/texture_skybox.jpg");
             textureIds = newTextureIds;
+
+            // Skybox
+            /*
+            skyBox = graphController.CreateSkyboxObj(1);
+            var skyMat = new Matrix4(
+                (float)Math.Pow(10, 12), 0, 0, (float)Math.Pow(10, 10) / 2,
+                0, (float)Math.Pow(10, 12), 0, (float)Math.Pow(10, 10) / 2,
+                0, 0, (float)Math.Pow(10, 12), (float)Math.Pow(10, 10) / 2,
+                0, 0, 0, 1
+                );
+            TransformObj(skyBox, skyMat);
+             */
         }
 
         public void AddDrawObj(SimObject sObj)
@@ -121,17 +136,15 @@ namespace SolarSimulation
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown( OpenTK.Input.Key.Space))
             {
                 PhysicObject physObj = new PhysicObject();
-                physObj.mass = 10000000000000000000;
-                physObj.radius = 10000000;
+                physObj.mass = 1000 * Math.Pow(10, 16);
+                physObj.radius = 200000;
                 physObj.Velocity = new double[] { 1.0, 1.0, 1.0 };
                 physObj.Acceleration = new double[3];
 
-                var spawnPos = camController.Position;
-                spawnPos[2] += 55000;
+                var spawnPos = new double[] {-camController.Position[0], -camController.Position[1], -camController.Position[2]};
+                spawnPos[2] += 25000;
                 SimObject simObj = new SimObject(
-                    new double[]{
-                        camController.Position[0],camController.Position[1],camController.Position[2]
-                    }, physObj, graphController.CreateGraphicsObj(0));
+                    spawnPos, physObj, graphController.CreateGraphicsObj(0));
                 simObj.Scale = new double[] { physObj.radius, physObj.radius, physObj.radius };
                 //comets.Add(drawObjList.Count, simObj);
                 AddDrawObj(simObj);
@@ -227,64 +240,85 @@ namespace SolarSimulation
 
             // Enable Texturing and setup.
             GL.Enable(EnableCap.Texture2D);
-
-            for (int j = 0; j < drawObjList.Count; j++ )
+            /*
+            List<Triangle> skyboxTriangles = graphController.GetShape(skyBox.ShapeIndex);
+            GL.BindTexture(TextureTarget.Texture2D, textureIds[6]);
+            for (int i = 0; i < skyboxTriangles.Count; i++)
             {
-                var curSimObj = drawObjList[j];
-                Graphics.GraphicsObject curGraphObj = curSimObj.GraphicsObj;
-                List<Triangle> shape = graphController.GetShape(curGraphObj.ShapeIndex);
+                v1 = skyBox.vertices[skyboxTriangles[i].vi1];
+                v2 = skyBox.vertices[skyboxTriangles[i].vi2];
+                v3 = skyBox.vertices[skyboxTriangles[i].vi3];
 
-                /*
-                // Setup Color:
-                color = curGraphObj.Color;
-                OpenTK.Graphics.Color4 material_ambient = new OpenTK.Graphics.Color4(color[0], color[1], color[2], 1.0f);
-                OpenTK.Graphics.Color4 material_diffuse = new OpenTK.Graphics.Color4(color[3], color[4], color[5], 1.0f);
-                OpenTK.Graphics.Color4 material_specular = new OpenTK.Graphics.Color4(color[6], color[7], color[8], 1.0f);
-                 */
+                GL.Begin(PrimitiveType.Triangles);
 
-                GL.BindTexture(TextureTarget.Texture2D, textureIds[j]);
+                GL.TexCoord2(v1.u, v1.v);
+                GL.Vertex3(v1.x, v1.y, v1.z);
 
-                for (int i = 0; i < shape.Count; i++)
+                GL.TexCoord2(v2.u, v2.v);
+                GL.Vertex3(v2.x, v2.y, v2.z);
+
+                GL.TexCoord2(v3.u, v3.v);
+                GL.Vertex3(v3.x, v3.y, v3.z);
+
+                GL.End();
+            }*/
+
+                for (int j = 0; j < drawObjList.Count; j++)
                 {
-                    v1 = curGraphObj.vertices[shape[i].vi1];
-                    v2 = curGraphObj.vertices[shape[i].vi2];
-                    v3 = curGraphObj.vertices[shape[i].vi3];
-
-                    n1 = curGraphObj.vertices[shape[i].ni1];
-                    n2 = curGraphObj.vertices[shape[i].ni2];
-                    n3 = curGraphObj.vertices[shape[i].ni3];
-
-                    GL.Begin(PrimitiveType.Triangles);
+                    var curSimObj = drawObjList[j];
+                    Graphics.GraphicsObject curGraphObj = curSimObj.GraphicsObj;
+                    List<Triangle> shape = graphController.GetShape(curGraphObj.ShapeIndex);
 
                     /*
-                    // Setup material reflection
-                    GL.Material(MaterialFace.Front, MaterialParameter.Ambient, material_ambient);
-                    GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
-                    GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
-                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
+                    // Setup Color:
+                    color = curGraphObj.Color;
+                    OpenTK.Graphics.Color4 material_ambient = new OpenTK.Graphics.Color4(color[0], color[1], color[2], 1.0f);
+                    OpenTK.Graphics.Color4 material_diffuse = new OpenTK.Graphics.Color4(color[3], color[4], color[5], 1.0f);
+                    OpenTK.Graphics.Color4 material_specular = new OpenTK.Graphics.Color4(color[6], color[7], color[8], 1.0f);
                      */
 
-                    var offset = new Vector3(
-                            (float)curSimObj.Position[0],
-                            (float)curSimObj.Position[1],
-                            (float)curSimObj.Position[2]
-                    );
+                    if (j < 5)
+                    { GL.BindTexture(TextureTarget.Texture2D, textureIds[j]); }
+                    else
+                    { GL.BindTexture(TextureTarget.Texture2D, textureIds[5]); }
 
-                    GL.TexCoord2(n1.u, n1.v);
-                    GL.Normal3(n1.x, n1.y, n1.z);
-                    GL.Vertex3(v1.x, v1.y, v1.z);
+                    for (int i = 0; i < shape.Count; i++)
+                    {
+                        v1 = curGraphObj.vertices[shape[i].vi1];
+                        v2 = curGraphObj.vertices[shape[i].vi2];
+                        v3 = curGraphObj.vertices[shape[i].vi3];
 
-                    GL.TexCoord2(n2.u, n2.v);
-                    GL.Normal3(n2.x, n2.y, n2.z);
-                    GL.Vertex3(v2.x, v2.y, v2.z);
+                        n1 = curGraphObj.vertices[shape[i].ni1];
+                        n2 = curGraphObj.vertices[shape[i].ni2];
+                        n3 = curGraphObj.vertices[shape[i].ni3];
 
-                    GL.TexCoord2(n3.u, n3.v);
-                    GL.Normal3(n3.x, n3.y, n3.z);
-                    GL.Vertex3(v3.x, v3.y, v3.z);
+                        GL.Begin(PrimitiveType.Triangles);
 
-                    GL.End();
+                        /*
+                        // Setup material reflection
+                        GL.Material(MaterialFace.Front, MaterialParameter.Ambient, material_ambient);
+                        GL.Material(MaterialFace.Front, MaterialParameter.Diffuse, material_diffuse);
+                        GL.Material(MaterialFace.Front, MaterialParameter.Specular, material_specular);
+                        GL.Material(MaterialFace.Front, MaterialParameter.Shininess, material_shininess);
+                         */
+
+                        GL.TexCoord2(v1.u, v1.v);
+                        GL.Normal3(n1.x, n1.y, n1.z);
+                        GL.Vertex3(v1.x, v1.y, v1.z);
+
+                        GL.TexCoord2(v2.u, v2.v);
+                        GL.Normal3(n2.x, n2.y, n2.z);
+                        GL.Vertex3(v2.x, v2.y, v2.z);
+
+                        GL.TexCoord2(v3.u, v3.v);
+                        GL.Normal3(n3.x, n3.y, n3.z);
+                        GL.Vertex3(v3.x, v3.y, v3.z);
+
+                        GL.End();
+                    }
                 }
-            }
+
+
         }
 
         private void ShadeVertex(Vertex v, Vertex n, float[] color)

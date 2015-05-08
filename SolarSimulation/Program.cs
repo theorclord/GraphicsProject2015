@@ -22,6 +22,7 @@ namespace SolarSimulation
 
             /* HANDLE GRAPHICS */
             graphCon.ReadObjFile("sphere.obj");
+            graphCon.ReadSkyObjFile("skybox.obj");
 
             // The Sun
             GraphicsObject sunGraphics = graphCon.CreateGraphicsObj(0);

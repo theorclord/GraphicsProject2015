@@ -35,6 +35,14 @@ namespace SolarSimulation.Graphics
         public GraphicsObject CreateGraphicsObj(int shape)
         { return CreateGraphicsObj(shape, defaultMaterial); }
 
+        public GraphicsObject CreateSkyboxObj(int shape)
+        { 
+            return new GraphicsObject(
+            new List<Vertex>(gfxObjs[shape].vertices),
+            new List<Vertex>(),
+            shape, defaultMaterial);
+        }
+
         public void ReadObjFile(String filename)
         {
             List<Vertex> newVertices = new List<Vertex>();
@@ -145,6 +153,11 @@ namespace SolarSimulation.Graphics
                                 newVertex.x = Double.Parse(curLineData[1], numFormat);
                                 newVertex.y = Double.Parse(curLineData[2], numFormat);
                                 newVertex.z = Double.Parse(curLineData[3], numFormat);
+
+                                double[] texCoords = GetTextureCoord(newVertex.x, newVertex.y, newVertex.z);
+                                newVertex.u = texCoords[0];
+                                newVertex.v = texCoords[1];
+
                                 newVertices.Add(newVertex);
                                 break;
                             }
@@ -164,11 +177,8 @@ namespace SolarSimulation.Graphics
 
                                 // Conversion from .obj files 1-indexing to ordinary programming happens here.
                                 newTriangle.vi1 = Int32.Parse(vertice_normal_array[0]) - 1;
-                                newTriangle.ni1 = Int32.Parse(vertice_normal_array[1]) - 1;
-                                newTriangle.vi2 = Int32.Parse(vertice_normal_array[2]) - 1;
-                                newTriangle.ni2 = Int32.Parse(vertice_normal_array[3]) - 1;
-                                newTriangle.vi3 = Int32.Parse(vertice_normal_array[4]) - 1;
-                                newTriangle.ni3 = Int32.Parse(vertice_normal_array[5]) - 1;
+                                newTriangle.vi2 = Int32.Parse(vertice_normal_array[1]) - 1;
+                                newTriangle.vi3 = Int32.Parse(vertice_normal_array[2]) - 1;
 
                                 strSanitizer.Clear();
                                 newTriangles.Add(newTriangle);
@@ -179,8 +189,8 @@ namespace SolarSimulation.Graphics
                 }
             }
 
-            //GraphicsObject newGraphObj = new GraphicsObject(newVertices, newNormals, shapeIndex, defaultMaterial);
-            //this.gfxObjs.Add(newGraphObj);
+            GraphicsObject newGraphObj = new GraphicsObject(newVertices, new List<Vertex>(), shapeIndex, defaultMaterial);
+            this.gfxObjs.Add(newGraphObj);
             this.shapes.Add(newTriangles);
             shapeIndex++;
             //new GraphicsObject(newVertices, newNormals, newTriangles);
