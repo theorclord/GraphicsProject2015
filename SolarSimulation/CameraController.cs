@@ -93,7 +93,7 @@ namespace SolarSimulation
             if (keyState.IsKeyDown(OpenTK.Input.Key.ControlLeft))
             {
                 for (int i = 0; i < refTranslation.Length; i++)
-                { refTranslation[i] *= 10; }
+                { refTranslation[i] *= 100; }
             }
 
             for (int i = 0; i < 3; i++)

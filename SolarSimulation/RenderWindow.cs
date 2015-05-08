@@ -80,11 +80,21 @@ namespace SolarSimulation
 
         private void TransformObj(GraphicsObject gObj, Matrix4 transMatrix)
         {
+            Vertex v, n;
             for (int i = 0; i < gObj.vertices.Count; i++)
-            { gObj.vertices[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.vertices[i]), transMatrix)); }
+            {
+                v = gObj.vertices[i];
+                graphController.Dehomogenize(Vector4.Transform(graphController.Homogenize(gObj.vertices[i]), transMatrix), ref v);
+                gObj.vertices[i] = v;
+            }
 
             for (int i = 0; i < gObj.normals.Count; i++)
-            { Normalize(gObj.normals[i] = Dehomogenize(Vector4.Transform(Homogenize(gObj.normals[i]), transMatrix))); }
+            {
+                n = gObj.normals[i];
+                graphController.Dehomogenize(Vector4.Transform(graphController.Homogenize(gObj.normals[i]), transMatrix), ref n);
+                Normalize(n);
+                gObj.normals[i] = n;
+            }
         }
         
         private void TransformObjs(List<Matrix4> transMatrix)
@@ -97,13 +107,6 @@ namespace SolarSimulation
             }
         }
 
-        public Vector4 Homogenize(Vertex v)
-        { return new Vector4((float)v.x, (float)v.y, (float)v.z, 1.0f); }
-
-        public Vertex Dehomogenize(Vector4 v)
-        { return new Vertex(v.X, v.Y, v.Z); }
-
-
         /* 
          * Most code inspired by code found on
          * OpenTK documentation:
@@ -113,6 +116,7 @@ namespace SolarSimulation
          */
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            double timeSinceLastFrame = e.Time;
             //Spawn comets
             if (OpenTK.Input.Keyboard.GetState().IsKeyDown( OpenTK.Input.Key.Space))
             {
@@ -133,9 +137,18 @@ namespace SolarSimulation
                 AddDrawObj(simObj);
             }
 
+            // Hold T to accelerate to 1 day / frame
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown( OpenTK.Input.Key.T))
+            { timeSinceLastFrame *= 86400; }
+
+            // Hold T + Y tp accelerate to 10 days / frame.
+            // Y calculates only 10 seconds on it's own.
+            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Y))
+            { timeSinceLastFrame *= 10; }
+            
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            List<Matrix4> transMats = physController.Update(drawObjList, e.Time);
+            List<Matrix4> transMats = physController.Update(drawObjList, timeSinceLastFrame);
             TransformObjs(transMats);
 
             //TransformObjs(physController.Update(drawObjList, e.Time));
@@ -257,18 +270,15 @@ namespace SolarSimulation
                             (float)curSimObj.Position[2]
                     );
 
-                    TexCoord = graphController.GetTextureCoord(n1.x, n1.y, n1.z, offset);
-                    GL.TexCoord2(TexCoord[0], TexCoord[1]);
+                    GL.TexCoord2(n1.u, n1.v);
                     GL.Normal3(n1.x, n1.y, n1.z);
                     GL.Vertex3(v1.x, v1.y, v1.z);
 
-                    TexCoord = graphController.GetTextureCoord(n2.x, n2.y, n2.z, offset);
-                    GL.TexCoord2(TexCoord[0], TexCoord[1]);
+                    GL.TexCoord2(n2.u, n2.v);
                     GL.Normal3(n2.x, n2.y, n2.z);
                     GL.Vertex3(v2.x, v2.y, v2.z);
 
-                    TexCoord = graphController.GetTextureCoord(n3.x, n3.y, n3.z, offset);
-                    GL.TexCoord2(TexCoord[0], TexCoord[1]);
+                    GL.TexCoord2(n3.u, n3.v);
                     GL.Normal3(n3.x, n3.y, n3.z);
                     GL.Vertex3(v3.x, v3.y, v3.z);
 
@@ -311,7 +321,7 @@ namespace SolarSimulation
             Vertex v_to_eye = new Vertex { x = eye[0] - v.x, y = eye[1] - v.y, z = eye[2] - v.z };
             Normalize(v_to_eye);
 
-            float l_distance = (float)Length(new Vertex(l.x - v.x, l.y - v.y, l.z - v.z));
+            float l_distance = (float)Length(new Vector3((float)(l.x - v.x), (float)(l.y - v.y), (float)(l.z - v.z) ));
             float l_intensity = 700000 / l_distance;
 
             //GL.Disable(EnableCap.Lighting);
@@ -372,6 +382,11 @@ namespace SolarSimulation
         double Length(Vertex v)
         {
             return Math.Sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
+        }
+
+        double Length(Vector3 v)
+        {
+            return Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
         }
     }
 }

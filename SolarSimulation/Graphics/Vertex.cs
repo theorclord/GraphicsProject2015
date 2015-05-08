@@ -8,15 +8,16 @@ namespace SolarSimulation.Graphics
 {
 	public struct Vertex
 	{
-		public double x;
-		public double y;
-		public double z;
+		public double x, y, z;
+        public double u, v;
 
-        public Vertex(double x, double y, double z)
+        public Vertex(double x, double y, double z, double u, double v)
         {
             this.x = x;
             this.y = y;
             this.z = z;
+            this.u = u;
+            this.v = v;
         }
 	}
 }

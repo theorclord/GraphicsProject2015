@@ -64,6 +64,11 @@ namespace SolarSimulation.Graphics
                                 newVertex.x = Double.Parse(curLineData[1], numFormat);
                                 newVertex.y = Double.Parse(curLineData[2], numFormat);
                                 newVertex.z = Double.Parse(curLineData[3], numFormat);
+
+                                double[] texCoords = GetTextureCoord(newVertex.x, newVertex.y, newVertex.z);
+                                newVertex.u = texCoords[0];
+                                newVertex.v = texCoords[1];
+
                                 newVertices.Add(newVertex);
                                 break;
                             }
@@ -111,7 +116,6 @@ namespace SolarSimulation.Graphics
             this.gfxObjs.Add(newGraphObj);
             this.shapes.Add(newTriangles);
             shapeIndex++;
-            //new GraphicsObject(newVertices, newNormals, newTriangles);
         }
         public void ReadSkyObjFile(String filename)
         {
@@ -220,13 +224,13 @@ namespace SolarSimulation.Graphics
          * Algorithm described at:
          * https://www.cs.unc.edu/~rademach/xroads-RT/RTarticle.html
          */
-        public double[] GetTextureCoord(double x, double y, double z, Vector3 offset)
+        public double[] GetTextureCoord(double x, double y, double z)
         {
             double u, v;
-            var Ve = new Vector3(1, 0, 0);
+            var Ve = new Vector3(0, 0, 1);
             var Vn = new Vector3(0, 1, 0);
 
-            var Vp = new Vector3((float)(x - offset.X), (float)(y - offset.Y), (float)(z - offset.Z));
+            var Vp = new Vector3((float)x, (float)y, (float)z);
 
             Vp.X = (float)(Vp.X / Length(Vp));
             Vp.Y = (float)(Vp.Y / Length(Vp));
@@ -260,6 +264,15 @@ namespace SolarSimulation.Graphics
                 v.X * n.Z - v.Z * n.X,  // Y-coord
                 v.X * n.Y - v.Y * n.X   // Z-coord
             );
+        }
+        public Vector4 Homogenize(Vertex v)
+        { return new Vector4((float)v.x, (float)v.y, (float)v.z, 1.0f); }
+
+        public void Dehomogenize(Vector4 v, ref Vertex u)
+        {
+            u.x = v.X;
+            u.y = v.Y;
+            u.z = v.Z;
         }
 	}
 }
