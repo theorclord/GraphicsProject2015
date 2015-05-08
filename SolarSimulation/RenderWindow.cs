@@ -208,7 +208,7 @@ namespace SolarSimulation
             // Create and apply projection matrix.
             GL.MatrixMode(MatrixMode.Projection);
             float persAspect = (float)ClientRectangle.Width / (float)ClientRectangle.Height;
-            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 5000.0f, 3000000000.0f);
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 5000.0f, 300000000000.0f);
             GL.LoadMatrix(ref persMat);
 
             // Create and apply view matrix.
