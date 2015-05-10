@@ -24,23 +24,20 @@ namespace SolarSimulation.Graphics
         public List<Triangle> GetShape(int index)
         { return shapes[index]; }
 
-        public GraphicsObject CreateGraphicsObj(int shape, float[] color)
+        public GraphicsObject CreateGraphicsObj(int shape)
         { 
             return new GraphicsObject(
             new List<Vertex>(gfxObjs[shape].vertices), 
             new List<Vertex>(gfxObjs[shape].normals),
-            shape, color); 
+            shape); 
         }
-
-        public GraphicsObject CreateGraphicsObj(int shape)
-        { return CreateGraphicsObj(shape, defaultMaterial); }
 
         public GraphicsObject CreateSkyboxObj(int shape)
         { 
             return new GraphicsObject(
             new List<Vertex>(gfxObjs[shape].vertices),
             new List<Vertex>(),
-            shape, defaultMaterial);
+            shape);
         }
 
         public void ReadObjFile(String filename)
@@ -120,11 +117,12 @@ namespace SolarSimulation.Graphics
                 }
             }
             
-            GraphicsObject newGraphObj = new GraphicsObject(newVertices, newNormals, shapeIndex, defaultMaterial);
+            GraphicsObject newGraphObj = new GraphicsObject(newVertices, newNormals, shapeIndex);
             this.gfxObjs.Add(newGraphObj);
             this.shapes.Add(newTriangles);
             shapeIndex++;
         }
+
         public void ReadSkyObjFile(String filename)
         {
             List<Vertex> newVertices = new List<Vertex>();
@@ -189,11 +187,10 @@ namespace SolarSimulation.Graphics
                 }
             }
 
-            GraphicsObject newGraphObj = new GraphicsObject(newVertices, new List<Vertex>(), shapeIndex, defaultMaterial);
+            GraphicsObject newGraphObj = new GraphicsObject(newVertices, new List<Vertex>(), shapeIndex);
             this.gfxObjs.Add(newGraphObj);
             this.shapes.Add(newTriangles);
             shapeIndex++;
-            //new GraphicsObject(newVertices, newNormals, newTriangles);
         }
 
         /*
@@ -208,10 +205,9 @@ namespace SolarSimulation.Graphics
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            /*
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.Repeat);
-            */
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
+
             Bitmap bmp = new Bitmap(filename);
             BitmapData bmp_data = bmp.LockBits(
                 new Rectangle(0, 0, bmp.Width, bmp.Height), 
@@ -246,7 +242,7 @@ namespace SolarSimulation.Graphics
             Vp.Y = (float)(Vp.Y / Length(Vp));
             Vp.Z = (float)(Vp.Z / Length(Vp));
 
-            var phi = Math.Acos( Dot(Vn, Vp));
+            var phi = Math.Acos( -Dot(Vn, Vp));
 
             v = phi / Math.PI;
 

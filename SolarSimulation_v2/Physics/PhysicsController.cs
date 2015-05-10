@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace SolarSimulation.Physics
+namespace SolarSimulation_v2.Physics
 {
     class PhysicsController
     {

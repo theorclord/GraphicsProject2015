@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SolarSimulation.Graphics;
-using SolarSimulation.Physics;
+using SolarSimulation_v2.Graphics;
+using SolarSimulation_v2.Physics;
 
-namespace SolarSimulation
+namespace SolarSimulation_v2
 {
     struct SimObject
     {
         public double[] Position
-        { get; set; }
-
-        public double[] Scale
         { get; set; }
 
         public PhysicsObject PhysicsObj
