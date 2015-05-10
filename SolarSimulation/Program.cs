@@ -39,39 +39,57 @@ namespace SolarSimulation
             // Mars
             GraphicsObject marsGraphics = graphCon.CreateGraphicsObj(0);
             
+            // Jupiter
+            GraphicsObject jupiterGraphics = graphCon.CreateGraphicsObj(0);
+
+            // Saturn
+            GraphicsObject saturnGraphics = graphCon.CreateGraphicsObj(0);
+
             /* GFX HANDLING DONE */
 
 
             /* HANDLE PHYSICS */
             PhysicObject sunPhys = new PhysicObject();
             sunPhys.mass = 1.98843 * Math.Pow(10, 30);
-            sunPhys.radius = 6963420;
+            sunPhys.radius = 6963420 * 2;
             sunPhys.Velocity = new double[3];
             sunPhys.Acceleration = new double[3];
             
             PhysicObject earthPhys = new PhysicObject();
             earthPhys.mass = 5.97223 * Math.Pow(10, 24);
-            earthPhys.radius = 6371000;
+            earthPhys.radius = 6371000 * 2;
             earthPhys.Velocity = new double[] { 0, 0, 29.78 * 1000 };
             earthPhys.Acceleration = new double[3];
 
             PhysicObject mercuryPhys = new PhysicObject();
             mercuryPhys.mass = 3.3022 * Math.Pow(10, 23);
-            mercuryPhys.radius = 2439000.7;
+            mercuryPhys.radius = 2439000.7*2;
             mercuryPhys.Velocity = new double[] { 0, 0, 47.362 * 1000};
             mercuryPhys.Acceleration = new double[3];
 
             PhysicObject venusPhys = new PhysicObject();
             venusPhys.mass = 4.8676 * Math.Pow(10, 24);
-            venusPhys.radius = 6051000.8;
+            venusPhys.radius = 6051000.8 * 2;
             venusPhys.Velocity = new double[] { 0, 0, 35.02 * 1000 };
             venusPhys.Acceleration = new double[3];
             
             PhysicObject marsPhys = new PhysicObject();
             marsPhys.mass = 6.4185 * Math.Pow(10, 23);
-            marsPhys.radius = 3389000.5;
+            marsPhys.radius = 3389000.5 * 2;
             marsPhys.Velocity = new double[] { 0, 0, 24.077 * 1000 };
             marsPhys.Acceleration = new double[3];
+
+            PhysicObject jupiterPhys = new PhysicObject();
+            jupiterPhys.mass = 1.8986 * Math.Pow(10, 27);
+            jupiterPhys.radius = 69911000 * 2;
+            jupiterPhys.Velocity = new double[] { 0, 0, 13.07 * 1000 };
+            jupiterPhys.Acceleration = new double[3];
+
+            PhysicObject saturnPhys = new PhysicObject();
+            saturnPhys.mass = 5.6846 * Math.Pow(10, 26);
+            saturnPhys.radius = 60268000 * 2;
+            saturnPhys.Velocity = new double[] { 0, 0, 9.69 * 1000 };
+            saturnPhys.Acceleration = new double[3];
 
             /* PHYSICS HANDLING DONE*/
 
@@ -97,6 +115,14 @@ namespace SolarSimulation
             SimObject marsSim = new SimObject(new double[] { 227939100.0, 0, 0 }, marsPhys, marsGraphics);
             //SimObject marsSim = new SimObject(new double[] { 227939100, 0, 0 }, marsPhys, graphCon.ReadObjFile("sphere.obj"));
             marsSim.Scale = new double[] { marsPhys.radius, marsPhys.radius, marsPhys.radius };
+
+            SimObject jupiterSim = new SimObject(new double[] { 778547200.0, 0, 0 }, jupiterPhys, jupiterGraphics);
+            //SimObject marsSim = new SimObject(new double[] { 227939100, 0, 0 }, marsPhys, graphCon.ReadObjFile("sphere.obj"));
+            jupiterSim.Scale = new double[] { jupiterPhys.radius, jupiterPhys.radius, jupiterPhys.radius };
+
+            SimObject saturnSim = new SimObject(new double[] { 1433449370.0, 0, 0 }, saturnPhys, saturnGraphics);
+            //SimObject marsSim = new SimObject(new double[] { 227939100, 0, 0 }, marsPhys, graphCon.ReadObjFile("sphere.obj"));
+            saturnSim.Scale = new double[] { saturnPhys.radius, saturnPhys.radius, saturnPhys.radius };
             
             /* SIMOBJECTS PREPARED */
 
@@ -107,6 +133,8 @@ namespace SolarSimulation
             renderWindow.AddDrawObj(mercurySim);
             renderWindow.AddDrawObj(venusSim);
             renderWindow.AddDrawObj(marsSim);
+            renderWindow.AddDrawObj(jupiterSim);
+            renderWindow.AddDrawObj(saturnSim);
             renderWindow.InitScene();
             renderWindow.Run();
         }
