@@ -213,7 +213,7 @@ namespace SolarSimulation_v2
             // Create and apply projection matrix.
             GL.MatrixMode(MatrixMode.Projection);
             float persAspect = (float)ClientRectangle.Width / (float)ClientRectangle.Height;
-            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 5500, (float)(8 * Math.Pow(10, 12)));
+            persMat = OpenTK.Matrix4.CreatePerspectiveFieldOfView(degs2rads(60.0f), persAspect, 5500, (float)(8 * Math.Pow(10, 10)));
             GL.LoadMatrix(ref persMat);
             
             // Create and apply view matrix.
@@ -243,10 +243,10 @@ namespace SolarSimulation_v2
             {
                 case OpenTK.Input.Key.Keypad1: scaleMat = Matrix4.CreateScale(1); giantScaleMat = Matrix4.CreateScale(1); break;
                 case OpenTK.Input.Key.Keypad2: scaleMat = Matrix4.CreateScale(10); giantScaleMat = Matrix4.CreateScale(2); break;
-                case OpenTK.Input.Key.Keypad3: scaleMat = Matrix4.CreateScale(100); giantScaleMat = Matrix4.CreateScale(3); break;
-                case OpenTK.Input.Key.Keypad4: scaleMat = Matrix4.CreateScale(200); giantScaleMat = Matrix4.CreateScale(4); break;
-                case OpenTK.Input.Key.Keypad5: scaleMat = Matrix4.CreateScale(300); giantScaleMat = Matrix4.CreateScale(5); break;
-                case OpenTK.Input.Key.Keypad6: scaleMat = Matrix4.CreateScale(400); giantScaleMat = Matrix4.CreateScale(6); break;
+                case OpenTK.Input.Key.Keypad3: scaleMat = Matrix4.CreateScale(100); giantScaleMat = Matrix4.CreateScale(4); break;
+                case OpenTK.Input.Key.Keypad4: scaleMat = Matrix4.CreateScale(200); giantScaleMat = Matrix4.CreateScale(8); break;
+                case OpenTK.Input.Key.Keypad5: scaleMat = Matrix4.CreateScale(300); giantScaleMat = Matrix4.CreateScale(16); break;
+                case OpenTK.Input.Key.Keypad6: scaleMat = Matrix4.CreateScale(400); giantScaleMat = Matrix4.CreateScale(24); break;
                 case OpenTK.Input.Key.Space: CreateComet(); break;
                 default: return;
             }
