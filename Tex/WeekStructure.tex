@@ -65,4 +65,9 @@ Against the odds, we were capable of making major improvements to our code durin
 
 It was during week four that we realized how much unnecessary complexity had been introduced to the code, making way for a complete overhaul of the project within a very short amount of time. Instead of manipulating the vertices, we only stored the scale of the object within the GraphicsObject and its shape was bound to an index. To improve the runtime, a GraphicsCast was created to store vertex coordinates and triangle indexes. TBC
 
-\textsl{}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.7]{GraphicsProjectObjectsv2.png}
+\label{GraphicsObjectsv2}
+\caption{Structure of the simulation objects and their physics and graphic objects after refactoring}
+\end{figure}
