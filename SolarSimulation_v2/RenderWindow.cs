@@ -198,14 +198,12 @@ namespace SolarSimulation_v2
             // Enable automatic texture-coordinate generation
             float[] xPlane = new float[] { 1.0f, 0, 0, 1 };
             float[] yPlane = new float[] { 0, 1.0f, 0, 1 };
-            /*
             GL.Enable(EnableCap.TextureGenS);
             GL.Enable(EnableCap.TextureGenT);
             GL.TexGen(TextureCoordName.S, TextureGenParameter.TextureGenMode, (int)All.ObjectLinear);
             GL.TexGen(TextureCoordName.T, TextureGenParameter.TextureGenMode, (int)All.ObjectLinear);
             GL.TexGen(TextureCoordName.S, TextureGenParameter.ObjectPlane, xPlane);
             GL.TexGen(TextureCoordName.T, TextureGenParameter.ObjectPlane, yPlane);
-             */
 
             // Setup view and projection matrices.
             Matrix4 persMat, eyeMat;
